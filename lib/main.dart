@@ -31,7 +31,13 @@ class MyApp extends StatelessWidget {
                   headline6: TextStyle(fontSize: 20),
                 ),
           ),
-          home: Verify(),
+          home: AuthScreen(),
+          routes: {
+            Signup.routeName: (ctx) => Signup(),
+            Login.routeName: (ctx) => Login(),
+            Verify.routeName: (ctx) => Verify(),
+            Dashboard.routeName: (ctx) => Dashboard(),
+          },
         ),
       ),
     );

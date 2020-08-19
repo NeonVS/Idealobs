@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 
 class AuthScreen extends StatelessWidget {
-  void _press() {}
+  void _login(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed('/login');
+  }
+
+  void _signup(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed('/signup');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,6 +21,15 @@ class AuthScreen extends StatelessWidget {
           ),
           child: Scaffold(
             backgroundColor: Colors.transparent,
+            // appBar: AppBar(
+            //     title: Text('Idealobs'),
+            //     centerTitle: true,
+            //     backgroundColor: Colors.orangeAccent,
+            //     shape: RoundedRectangleBorder(
+            //       borderRadius: BorderRadius.vertical(
+            //         bottom: Radius.circular(30),
+            //       ),
+            //     )),
           ),
         ),
         Positioned(
@@ -26,8 +41,8 @@ class AuthScreen extends StatelessWidget {
                 height: 53,
                 width: mediaQuery.size.width * 0.84,
                 child: RaisedButton(
-                  onPressed: _press,
-                  color: Color.fromRGBO(131, 123, 217, 1),
+                  onPressed: () => _login(context),
+                  color: Colors.orangeAccent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -43,8 +58,8 @@ class AuthScreen extends StatelessWidget {
                 height: 53,
                 width: mediaQuery.size.width * 0.84,
                 child: RaisedButton(
-                  onPressed: _press,
-                  color: Color.fromRGBO(131, 123, 217, 1),
+                  onPressed: () => _signup(context),
+                  color: Colors.orangeAccent,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -56,9 +71,9 @@ class AuthScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              Text('Welcome to Idealobs',
-                  style: TextStyle(
-                      fontSize: 10, color: Color.fromRGBO(131, 123, 217, 1))),
+              // Chip(
+              //   label: Text('Welcome to idealobs'),
+              // ),
             ],
           ),
           bottom: mediaQuery.size.height * 0.08,
