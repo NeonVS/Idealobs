@@ -5,7 +5,10 @@ import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
-const serverBaseUrl = 'http://localhost:3000';
+import '../models/http_exception.dart';
+
+//const serverBaseUrl = 'http://localhost:3000';
+const serverBaseUrl = 'https://da45806a954a.ngrok.io';
 
 class Auth with ChangeNotifier {
   String _token;
@@ -29,12 +32,24 @@ class Auth with ChangeNotifier {
 
   Future<void> signup(String email, String password) async {
     try {
-      final responseDate = await http.post(serverBaseUrl + '/auth/signup',
-          body: json.encode({'email': email, 'password': password}));
-      final response = json.decode(responseDate.body);
-      _token = response.token;
-      _userId = response._userId;
-      _expiryDate = DateTime.now().add(Duration(hours: 1));
+      final responseData = await http.post(
+        serverBaseUrl + '/auth/signup',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(
+          {'email': email, 'password': password},
+        ),
+      );
+      final response = json.decode(responseData.body) as Map<String, dynamic>;
+      if (responseData.statusCode >= 400) {
+        throw HttpException(response['message']);
+      }
+      _token = response['token'].toString();
+      _userId = response['userId'].toString();
+      _expiryDate = DateTime.now().add(
+        Duration(hours: 1),
+      );
       notifyListeners();
     } catch (error) {
       throw error;
@@ -43,18 +58,28 @@ class Auth with ChangeNotifier {
 
   Future<void> verify(String emailToken) async {
     try {
-      final responseData = await http.post(serverBaseUrl + '/auth/verify',
-          body: json.encode({'emailToken': emailToken}),
-          headers: {'Authorization': 'Bearer ' + token});
+      print(_token);
+      final responseData = await http.post(
+        serverBaseUrl + '/auth/verify',
+        body: json.encode({'emailToken': emailToken}),
+        headers: {
+          'Authorization': 'Bearer ' + _token,
+          'Content-Type': 'application/json'
+        },
+      );
       final response = json.decode(responseData.body);
-      _token = response.token;
+      if (responseData.statusCode >= 400) {
+        throw HttpException(response['message']);
+      }
+      _token = response['token'];
       _isVerified = true;
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
         {
           'token': _token,
           'userId': _userId,
-          'expiryDate': DateTime.now().add(Duration(hours: 1)),
+          'expiryDate':
+              DateTime.now().add(Duration(hours: 1)).toIso8601String(),
           'isVerified': true
         },
       );
@@ -68,16 +93,21 @@ class Auth with ChangeNotifier {
   Future<void> login(String email, String password) async {
     try {
       final responseData = await http.post(serverBaseUrl + '/auth/login',
-          body: json.encode({'email': email, 'password': password}));
+          body: json.encode({'email': email, 'password': password}),
+          headers: {'Content-Type': 'application/json'});
       final response = json.decode(responseData.body);
-      _userId = response.userId;
-      _token = response.token;
+      if (responseData.statusCode >= 400) {
+        throw HttpException(response['message']);
+      }
+      _userId = response['userId'];
+      _token = response['token'];
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
         {
           'token': _token,
           'userId': _userId,
-          'expiryDate': DateTime.now().add(Duration(hours: 1)),
+          'expiryDate':
+              DateTime.now().add(Duration(hours: 1)).toIso8601String(),
           'isVerified': true
         },
       );

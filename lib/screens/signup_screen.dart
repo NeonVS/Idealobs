@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+
+import '../providers/auth.dart';
 
 class Signup extends StatefulWidget {
   static const routeName = '/signup';
@@ -11,18 +15,42 @@ class _SignupState extends State<Signup> {
   final _passwordFocusNode = FocusNode();
   final _confirmPasswordFocusNode = FocusNode();
   final _passwordController = TextEditingController();
+  bool _isLoading = false;
 
   String _email;
   String _password;
 
-  void _save() {
+  void _save(BuildContext ctx) async {
     final _isValid = _form.currentState.validate();
     if (!_isValid) {
       return;
     }
     _form.currentState.save();
-    print(_email);
-    print(_password);
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+      await Provider.of<Auth>(context, listen: false).signup(_email, _password);
+      Navigator.of(context).pushNamed('/verify');
+    } catch (error) {
+      return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Some error has occurred!'),
+          content: Text(error.toString()),
+          actions: [
+            FlatButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Okay'),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   void _login(BuildContext ctx) {
@@ -31,6 +59,8 @@ class _SignupState extends State<Signup> {
 
   @override
   Widget build(BuildContext context) {
+    final spinKit =
+        SpinKitWave(color: Theme.of(context).primaryColor, size: 35);
     final mediaQuery = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
@@ -133,37 +163,42 @@ class _SignupState extends State<Signup> {
                       },
                       focusNode: _confirmPasswordFocusNode,
                       textInputAction: TextInputAction.done,
-                      onFieldSubmitted: (_) => _save(),
+                      //onFieldSubmitted: (_) => _save(context),
                     ),
                   ),
                   SizedBox(height: 40),
-                  SizedBox(
-                    height: 50,
-                    width: mediaQuery.width * 0.6,
-                    child: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
+                  if (_isLoading) spinKit,
+                  if (!_isLoading)
+                    SizedBox(
+                      height: 50,
+                      width: mediaQuery.width * 0.6,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        onPressed: () => _save(context),
+                        color: Theme.of(context).primaryColor,
+                        child: Text('Confirm',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 20)),
                       ),
-                      onPressed: _save,
-                      color: Theme.of(context).primaryColor,
-                      child: Text('Confirm',
-                          style: TextStyle(color: Colors.white, fontSize: 20)),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  SizedBox(
-                    height: 40,
-                    width: mediaQuery.width * 0.3,
-                    child: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
+                  if (!_isLoading) SizedBox(height: 20),
+                  if (!_isLoading)
+                    SizedBox(
+                      height: 40,
+                      width: mediaQuery.width * 0.3,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        onPressed: () => _login(context),
+                        color: Colors.grey,
+                        child: Text('Login ?',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 18)),
                       ),
-                      onPressed: () => _login(context),
-                      color: Colors.grey,
-                      child: Text('Login ?',
-                          style: TextStyle(color: Colors.white, fontSize: 18)),
-                    ),
-                  )
+                    )
                 ],
               ),
             ),
