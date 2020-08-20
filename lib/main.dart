@@ -7,6 +7,7 @@ import './screens/login_screen.dart';
 import './screens/signup_screen.dart';
 import './screens/verify.dart';
 import './screens/dashboard.dart';
+import './screens/profile_complete.dart';
 
 void main() {
   runApp(MyApp());
@@ -37,6 +38,7 @@ class MyApp extends StatelessWidget {
             Login.routeName: (ctx) => Login(),
             Verify.routeName: (ctx) => Verify(),
             Dashboard.routeName: (ctx) => Dashboard(),
+            ProfileComplete.routeName: (ctx) => ProfileComplete(),
           },
         ),
       ),
@@ -50,7 +52,7 @@ class MyApp extends StatelessWidget {
 //                   builder: (ctx, authResultSnapshot) {
 //                     if (authResultSnapshot.connectionState ==
 //                         ConnectionState.waiting) {
-//                       return Container();
+//                       return Container(child:Text('SplashScreen'),);
 //                     } else {
 //                       return AuthScreen();
 //                     }

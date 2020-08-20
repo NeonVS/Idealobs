@@ -1,14 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+
+import 'package:path/path.dart';
+import 'package:async/async.dart';
 
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 
 import '../models/http_exception.dart';
 
 //const serverBaseUrl = 'http://localhost:3000';
-const serverBaseUrl = 'https://da45806a954a.ngrok.io';
+const serverBaseUrl = 'https://624018f67c02.ngrok.io';
 
 class Auth with ChangeNotifier {
   String _token;
@@ -159,5 +164,34 @@ class Auth with ChangeNotifier {
     }
     final timeToExpiry = _expiryDate.difference(DateTime.now()).inSeconds;
     _authTimer = Timer(Duration(seconds: timeToExpiry), logout);
+  }
+
+  Future<void> complete_profile(File _image, String _username, String _gender,
+      String _description) async {
+    print(_image);
+    print(_token);
+    try {
+      Response response;
+      Dio dio = new Dio();
+      FormData formData = FormData.fromMap({
+        'username': _username,
+        'gender': _gender,
+        'description': _description,
+        'image': await MultipartFile.fromFile(_image.path,
+            filename: '$_username.png')
+      });
+      dio.options.headers['Authorization'] = 'Bearer ' + _token;
+      response = await dio.post(
+        serverBaseUrl + '/auth/complete_profile',
+        data: formData,
+      );
+      print(response.data);
+    } catch (error) {
+      if (error.response.statusCode == 422) {
+        throw HttpException('Username already taken!');
+      } else {
+        throw HttpException('Server Error, Please try after some time!');
+      }
+    }
   }
 }

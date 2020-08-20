@@ -24,7 +24,7 @@ class _VerifyState extends State<Verify> {
           _isLoading = true;
         });
         await Provider.of<Auth>(context, listen: false).verify(_code);
-        Navigator.of(context).pushReplacementNamed('/dashboard');
+        Navigator.of(context).pushReplacementNamed('/complete_profile');
       } catch (error) {
         print(error);
         return showDialog(
@@ -57,14 +57,15 @@ class _VerifyState extends State<Verify> {
     final mediaQuery = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-          centerTitle: true,
-          title: Text('Verify your Email'),
-          backgroundColor: Colors.orange[300],
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(30),
-            ),
-          )),
+        centerTitle: true,
+        title: Text('Verify your Email'),
+        backgroundColor: Colors.orange[300],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(30),
+          ),
+        ),
+      ),
       backgroundColor: Colors.white,
       body: Container(
         child: SingleChildScrollView(
