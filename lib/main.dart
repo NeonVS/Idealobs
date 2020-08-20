@@ -8,6 +8,7 @@ import './screens/signup_screen.dart';
 import './screens/verify.dart';
 import './screens/dashboard.dart';
 import './screens/profile_complete.dart';
+import './screens/splash_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -32,7 +33,19 @@ class MyApp extends StatelessWidget {
                   headline6: TextStyle(fontSize: 20),
                 ),
           ),
-          home: AuthScreen(),
+          home: auth.isAuth
+              ? Dashboard()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (ctx, authResultSnapshot) {
+                    if (authResultSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return SplashScreen();
+                    } else {
+                      return AuthScreen();
+                    }
+                  },
+                ),
           routes: {
             Signup.routeName: (ctx) => Signup(),
             Login.routeName: (ctx) => Login(),
@@ -45,16 +58,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-// auth.isAuth
-//               ? Dashboard()
-//               : FutureBuilder(
-//                   future: auth.tryAutoLogin(),
-//                   builder: (ctx, authResultSnapshot) {
-//                     if (authResultSnapshot.connectionState ==
-//                         ConnectionState.waiting) {
-//                       return Container(child:Text('SplashScreen'),);
-//                     } else {
-//                       return AuthScreen();
-//                     }
-//                   },
-//                 )

@@ -23,14 +23,18 @@ class Auth with ChangeNotifier {
   bool _isVerified = false;
 
   bool get isAuth {
-    return token != null && _isVerified;
+    if (token != null && _isVerified == true) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   String get token {
     if (_expiryDate != null &&
         _expiryDate.isAfter(DateTime.now()) &&
         _token != null) {
-      return token;
+      return _token;
     }
     return null;
   }
@@ -53,7 +57,7 @@ class Auth with ChangeNotifier {
       _token = response['token'].toString();
       _userId = response['userId'].toString();
       _expiryDate = DateTime.now().add(
-        Duration(hours: 1),
+        Duration(minutes: 55),
       );
       notifyListeners();
     } catch (error) {
@@ -63,7 +67,6 @@ class Auth with ChangeNotifier {
 
   Future<void> verify(String emailToken) async {
     try {
-      print(_token);
       final responseData = await http.post(
         serverBaseUrl + '/auth/verify',
         body: json.encode({'emailToken': emailToken}),
@@ -78,6 +81,7 @@ class Auth with ChangeNotifier {
       }
       _token = response['token'];
       _isVerified = true;
+      _expiryDate = DateTime.now().add(Duration(minutes: 55));
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
         {
@@ -106,6 +110,7 @@ class Auth with ChangeNotifier {
       }
       _userId = response['userId'];
       _token = response['token'];
+      _expiryDate = DateTime.now().add(Duration(minutes: 55));
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
         {
@@ -138,6 +143,10 @@ class Auth with ChangeNotifier {
     _token = extractedUserData['token'];
     _userId = extractedUserData['userId'];
     _expiryDate = expiryDate;
+    if (!extractedUserData.containsKey('isVerified') ||
+        !extractedUserData['isVerified']) {
+      return false;
+    }
     _isVerified = extractedUserData['isVerified'];
     notifyListeners();
     _autoLogout();
