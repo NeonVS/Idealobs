@@ -9,6 +9,7 @@ import './screens/verify.dart';
 import './screens/dashboard.dart';
 import './screens/profile_complete.dart';
 import './screens/splash_screen.dart';
+import './screens/new_project_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.orange,
             accentColor: Colors.yellow,
+            fontFamily: 'Alata',
             textTheme: ThemeData.light().textTheme.copyWith(
                   headline6: TextStyle(fontSize: 20),
                 ),
@@ -52,6 +54,7 @@ class MyApp extends StatelessWidget {
             Verify.routeName: (ctx) => Verify(),
             Dashboard.routeName: (ctx) => Dashboard(),
             ProfileComplete.routeName: (ctx) => ProfileComplete(),
+            AddNewProject.routeName: (ctx) => AddNewProject(),
           },
         ),
       ),

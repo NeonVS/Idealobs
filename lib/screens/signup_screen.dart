@@ -198,7 +198,7 @@ class _SignupState extends State<Signup> {
                             style:
                                 TextStyle(color: Colors.white, fontSize: 18)),
                       ),
-                    )
+                    ),
                 ],
               ),
             ),

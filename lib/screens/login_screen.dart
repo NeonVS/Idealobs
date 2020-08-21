@@ -169,7 +169,7 @@ class _LoginState extends State<Login> {
                       child: Text('Register ?',
                           style: TextStyle(color: Colors.white, fontSize: 18)),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
