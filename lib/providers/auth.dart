@@ -2,9 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:path/path.dart';
-import 'package:async/async.dart';
-
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -37,6 +34,10 @@ class Auth with ChangeNotifier {
       return _token;
     }
     return null;
+  }
+
+  String get userId {
+    return _userId;
   }
 
   Future<void> signup(String email, String password) async {
@@ -186,8 +187,8 @@ class Auth with ChangeNotifier {
         'username': _username,
         'gender': _gender,
         'description': _description,
-        'image': await MultipartFile.fromFile(_image.path,
-            filename: '$_username.png')
+        'image':
+            await MultipartFile.fromFile(_image.path, filename: '$_userId.png')
       });
       dio.options.headers['Authorization'] = 'Bearer ' + _token;
       response = await dio.post(

@@ -11,5 +11,8 @@ Future<File> pick(String option) async {
   if (option == 'Gallery') {
     _pickedFile = await _picker.getImage(source: ImageSource.gallery);
   }
+  if (_pickedFile == null) {
+    return null;
+  }
   return File(_pickedFile.path);
 }

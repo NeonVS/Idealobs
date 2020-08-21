@@ -31,6 +31,12 @@ class _ProfileCompleteState extends State<ProfileComplete> {
     });
     try {
       _image = await pick(option);
+      if (_image == null) {
+        setState(() {
+          _isImageLoading = false;
+        });
+        return;
+      }
       Navigator.of(context).pop();
     } catch (error) {
       Navigator.of(context).pop();

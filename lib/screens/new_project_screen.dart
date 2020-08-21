@@ -1,5 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:file_picker/file_picker.dart';
+
+import '../widget/profile_image_picker.dart';
+
+import '../providers/project.dart';
+import '../providers/projects.dart';
 
 class AddNewProject extends StatefulWidget {
   static String routeName = '/new_project';
@@ -8,7 +18,20 @@ class AddNewProject extends StatefulWidget {
 }
 
 class _AddNewProjectState extends State<AddNewProject> {
+  String _projectName;
+  String _companyName;
   int _currentValue = 1;
+  double _budget;
+  double _payment;
+  String _intro;
+  String _description;
+  String _youtubeUrl;
+  File _image;
+  File _attachment;
+
+  bool _imageLoading = false;
+  bool _fileLoading = false;
+
   DateTime selectedDate = DateTime.now();
   final _form = GlobalKey<FormState>();
 
@@ -20,9 +43,105 @@ class _AddNewProjectState extends State<AddNewProject> {
       lastDate: DateTime(2050),
     );
     if (picked != null && picked != selectedDate)
+      setState(
+        () {
+          selectedDate = picked;
+        },
+      );
+  }
+
+  void _pickImage() async {
+    try {
       setState(() {
-        selectedDate = picked;
+        _imageLoading = true;
       });
+      _image = await pick('Gallery');
+      if (_image == null) {
+        setState(() {
+          _imageLoading = false;
+        });
+        return;
+      }
+    } catch (error) {
+      return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Some error has occurred!'),
+          content: Text(error.message.toString()),
+          actions: [
+            FlatButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Okay'),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      setState(() {
+        _imageLoading = false;
+      });
+    }
+  }
+
+  void _pickAttachment() async {
+    try {
+      setState(() {
+        _fileLoading = true;
+      });
+      _attachment = await FilePicker.getFile();
+      print(_attachment);
+    } catch (error) {
+      return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Some error has occurred!'),
+          content: Text(error.message.toString()),
+          actions: [
+            FlatButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Okay'),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      setState(() {
+        _fileLoading = false;
+      });
+    }
+  }
+
+  void _save() async {
+    final _isValid = _form.currentState.validate();
+    if (!_isValid) {
+      return;
+    }
+    _form.currentState.save();
+    print(_projectName);
+    print(_companyName);
+    print(_currentValue);
+    print(_budget);
+    print(_payment);
+    print(_intro);
+    print(_description);
+    print(_youtubeUrl);
+    print(_image);
+    print(_attachment);
+    final project = new Project(
+      projectName: _projectName,
+      companyName: _companyName,
+      numColabs: _currentValue,
+      budget: _budget,
+      amountPayable: _payment,
+      intro: _intro,
+      description: _description,
+      youtubeUrl: _youtubeUrl,
+      dateTime: selectedDate,
+    );
+    try {
+      await Provider.of<Projects>(context, listen: false)
+          .addProject(project, _image, _attachment);
+    } catch (error) {}
   }
 
   @override
@@ -39,6 +158,16 @@ class _AddNewProjectState extends State<AddNewProject> {
       actions: [
         IconButton(icon: Icon(Icons.save), onPressed: () {}),
       ],
+    );
+
+    final spinKit = SpinKitRotatingCircle(
+      color: Colors.orangeAccent,
+      size: 50,
+    );
+
+    final spinKitFile = SpinKitCubeGrid(
+      color: Colors.orangeAccent,
+      size: 25,
     );
 
     return Scaffold(
@@ -81,6 +210,17 @@ class _AddNewProjectState extends State<AddNewProject> {
                         borderRadius: BorderRadius.circular(25),
                       ),
                     ),
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value.length < 4) {
+                        return 'Project Name should be atleast 4 characters long';
+                      } else {
+                        return null;
+                      }
+                    },
+                    onSaved: (value) {
+                      _projectName = value;
+                    },
                   ),
                 ),
                 SizedBox(height: 30),
@@ -95,6 +235,17 @@ class _AddNewProjectState extends State<AddNewProject> {
                         borderRadius: BorderRadius.circular(25),
                       ),
                     ),
+                    keyboardType: TextInputType.text,
+                    validator: (value) {
+                      if (value.length < 4) {
+                        return 'Company Name should be atleast 4 characters long';
+                      } else {
+                        return null;
+                      }
+                    },
+                    onSaved: (value) {
+                      _companyName = value;
+                    },
                   ),
                 ),
                 SizedBox(height: 30),
@@ -124,8 +275,12 @@ class _AddNewProjectState extends State<AddNewProject> {
                           initialValue: _currentValue,
                           minValue: 0,
                           maxValue: 100,
-                          onChanged: (newValue) =>
-                              setState(() => _currentValue = newValue),
+                          onChanged: (newValue) {
+                            setState(() {
+                              _currentValue = newValue;
+                              print(_currentValue);
+                            });
+                          },
                         ),
                       ),
                     ],
@@ -143,6 +298,21 @@ class _AddNewProjectState extends State<AddNewProject> {
                         borderRadius: BorderRadius.circular(25),
                       ),
                     ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      try {
+                        double.parse(value);
+                      } catch (error) {
+                        return 'Value can only be number!';
+                      }
+                      if (double.parse(value) < 1) {
+                        return 'Value should be positive number!';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _budget = double.parse(value);
+                    },
                   ),
                 ),
                 SizedBox(height: 30),
@@ -157,37 +327,72 @@ class _AddNewProjectState extends State<AddNewProject> {
                         borderRadius: BorderRadius.circular(25),
                       ),
                     ),
+                    keyboardType: TextInputType.number,
+                    validator: (value) {
+                      try {
+                        double.parse(value);
+                      } catch (error) {
+                        return 'Value can only be number!';
+                      }
+                      if (double.parse(value) < 1) {
+                        return 'Value should be positive number!';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _payment = double.parse(value);
+                    },
                   ),
                 ),
                 SizedBox(height: 30),
                 Container(
                   width: mediaQuery.size.width * 0.85,
                   child: TextFormField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.description),
-                        labelText: 'Tell us about your project!',
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.description),
+                      labelText: 'Tell us about your project!',
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
                       ),
-                      maxLines: 7,
-                      onSaved: (value) {}),
+                    ),
+                    maxLines: 7,
+                    keyboardType: TextInputType.multiline,
+                    validator: (value) {
+                      if (value.length < 10) {
+                        return 'Project intro should be atleast 10 characters long!';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _intro = value;
+                    },
+                  ),
                 ),
                 SizedBox(height: 30),
                 Container(
                   width: mediaQuery.size.width * 0.85,
                   child: TextFormField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.description),
-                        labelText: 'Description',
-                        fillColor: Colors.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(Icons.description),
+                      labelText: 'Description',
+                      fillColor: Colors.white,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25),
                       ),
-                      maxLines: 15,
-                      onSaved: (value) {}),
+                    ),
+                    maxLines: 15,
+                    keyboardType: TextInputType.multiline,
+                    validator: (value) {
+                      if (value.length < 20) {
+                        return 'Description should be atleast 20 characters long';
+                      }
+                      return null;
+                    },
+                    onSaved: (value) {
+                      _description = value;
+                    },
+                  ),
                 ),
                 SizedBox(height: 30),
                 Container(
@@ -224,18 +429,28 @@ class _AddNewProjectState extends State<AddNewProject> {
                 Container(
                   width: mediaQuery.size.width * 0.85,
                   child: TextFormField(
-                    decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.video_library),
-                      labelText: 'Youtube URL (Optional)',
-                      fillColor: Colors.white,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25),
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(Icons.video_library),
+                        labelText: 'Youtube URL (Optional)',
+                        fillColor: Colors.white,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(25),
+                        ),
                       ),
-                    ),
-                  ),
+                      keyboardType: TextInputType.url,
+                      validator: (value) {
+                        if (!value.contains('youtube')) {
+                          return 'Invalid URL';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        _youtubeUrl = value;
+                      }),
                 ),
                 SizedBox(height: 30),
                 GestureDetector(
+                  onTap: _pickImage,
                   child: Container(
                     width: mediaQuery.size.width * 0.85,
                     decoration: BoxDecoration(
@@ -244,15 +459,80 @@ class _AddNewProjectState extends State<AddNewProject> {
                         width: 1.5,
                         color: Colors.grey[400],
                       ),
-                      image: DecorationImage(
-                        image: NetworkImage(
-                            'https://mobikul.com/wp-content/uploads/2018/04/download-1-5-1024x383.png'),
-                        fit: BoxFit.cover,
-                      ),
+                      image: _imageLoading
+                          ? null
+                          : DecorationImage(
+                              image: _image == null
+                                  ? NetworkImage(
+                                      'https://mobikul.com/wp-content/uploads/2018/04/download-1-5-1024x383.png')
+                                  : FileImage(_image),
+                              fit: BoxFit.cover,
+                            ),
                     ),
                     height: 250,
+                    child: _imageLoading ? Center(child: spinKit) : null,
                   ),
-                )
+                ),
+                SizedBox(height: 30),
+                Container(
+                  width: mediaQuery.size.width * 0.85,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    border: Border.all(
+                      width: 1.5,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: mediaQuery.size.width * 0.50,
+                        padding: const EdgeInsets.all(15.0),
+                        child: Text(
+                          'Please select document related to project!',
+                          softWrap: true,
+                          overflow: TextOverflow.fade,
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: mediaQuery.size.width * 0.30,
+                        child: _fileLoading
+                            ? spinKitFile
+                            : _attachment == null
+                                ? FlatButton(
+                                    child: Text('Pick File'),
+                                    onPressed: _pickAttachment,
+                                  )
+                                : Icon(
+                                    Icons.done,
+                                    color: Colors.green[200],
+                                  ),
+                      )
+                    ],
+                  ),
+                ),
+                SizedBox(height: 30),
+                SizedBox(
+                  height: 50,
+                  width: mediaQuery.size.width * 0.6,
+                  child: RaisedButton(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    onPressed: _save,
+                    color: Theme.of(context).primaryColor,
+                    child: Text(
+                      'Confirm',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 30),
               ],
             ),
           ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import './providers/auth.dart';
+import './providers/projects.dart';
 import './screens/auth_screen.dart';
 import './screens/login_screen.dart';
 import './screens/signup_screen.dart';
@@ -23,6 +24,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (ctx) => Auth(),
         ),
+        ChangeNotifierProxyProvider<Auth, Projects>(
+          update: (ctx, auth, previousProducts) => Projects(
+              auth.token,
+              auth.userId,
+              previousProducts == null ? [] : previousProducts.items),
+        )
       ],
       child: Consumer<Auth>(
         builder: (ctx, auth, _) => MaterialApp(
