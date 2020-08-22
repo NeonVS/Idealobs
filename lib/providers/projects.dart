@@ -49,6 +49,7 @@ class Projects with ChangeNotifier {
         'amountPayable': project.amountPayable,
         'intro': project.intro,
         'description': project.description,
+        'categories': project.categories,
         'youtubeUrl': project.youtubeUrl,
         'dateTime': project.dateTime.toIso8601String(),
         'project_image': await MultipartFile.fromFile(image.path,

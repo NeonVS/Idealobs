@@ -7,9 +7,12 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:file_picker/file_picker.dart';
 
 import '../widget/profile_image_picker.dart';
+import '../widget/category_selector.dart';
 
 import '../providers/project.dart';
 import '../providers/projects.dart';
+
+import '../helpers/category.dart';
 
 class AddNewProject extends StatefulWidget {
   static String routeName = '/new_project';
@@ -26,8 +29,11 @@ class _AddNewProjectState extends State<AddNewProject> {
   String _intro;
   String _description;
   String _youtubeUrl;
+  List<String> _categories;
   File _image;
   File _attachment;
+  List<int> _categoryIndexes = [];
+  Set<int> selectedValues;
 
   bool _imageLoading = false;
   bool _fileLoading = false;
@@ -35,6 +41,34 @@ class _AddNewProjectState extends State<AddNewProject> {
 
   DateTime selectedDate;
   final _form = GlobalKey<FormState>();
+
+  void _showMultiSelect(BuildContext context) async {
+    final items = <MultiSelectDialogItem<int>>[
+      MultiSelectDialogItem(1, 'Production'),
+      MultiSelectDialogItem(2, 'Social'),
+      MultiSelectDialogItem(3, 'Educational'),
+      MultiSelectDialogItem(4, 'Community'),
+      MultiSelectDialogItem(5, 'Research'),
+      MultiSelectDialogItem(6, 'Business'),
+      MultiSelectDialogItem(7, 'IT'),
+      MultiSelectDialogItem(8, 'Science and Technology'),
+      MultiSelectDialogItem(9, 'Arts and Painting'),
+    ];
+
+    selectedValues = await showDialog<Set<int>>(
+      context: context,
+      builder: (BuildContext context) {
+        return MultiSelectDialog(
+          items: items,
+          initialSelectedValues: _categoryIndexes.toSet(),
+        );
+      },
+    );
+    setState(() {
+      _categories = convertToCategory(selectedValues);
+      _categoryIndexes = selectedValues.toList();
+    });
+  }
 
   _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -117,6 +151,9 @@ class _AddNewProjectState extends State<AddNewProject> {
     if (!_isValid) {
       return;
     }
+    if (_categories == null || _categories.length <= 0) {
+      throw HttpException('You must select atleast one category!');
+    }
     _form.currentState.save();
     final project = new Project(
       projectName: _projectName,
@@ -126,6 +163,7 @@ class _AddNewProjectState extends State<AddNewProject> {
       amountPayable: _payment,
       intro: _intro,
       description: _description,
+      categories: _categories,
       youtubeUrl: _youtubeUrl,
       dateTime: selectedDate,
     );
@@ -469,6 +507,73 @@ class _AddNewProjectState extends State<AddNewProject> {
                               )
                             ],
                           ),
+                        ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 30),
+                Container(
+                  width: mediaQuery.size.width * 0.85,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(25),
+                    border: Border.all(
+                      width: 1.5,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: mediaQuery.size.width * 0.50,
+                            padding: const EdgeInsets.all(15.0),
+                            child: Text(
+                              'Please select categories related to project!',
+                              softWrap: true,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                          Container(
+                              width: mediaQuery.size.width * 0.30,
+                              child: FlatButton(
+                                child: Text('Select Categories'),
+                                onPressed: () => _showMultiSelect(context),
+                              ))
+                        ],
+                      ),
+                      if (_categories != null && _categories.length != 0)
+                        Divider(),
+                      if (_categories != null && _categories.length != 0)
+                        Container(
+                          height: _categories != null
+                              ? _categories.length * 25.0
+                              : 0,
+                          child: ListView.builder(
+                              itemCount:
+                                  _categories != null ? _categories.length : 0,
+                              itemBuilder: (ctx, index) {
+                                return Row(
+                                  children: [
+                                    SizedBox(width: 15),
+                                    Icon(Icons.confirmation_number,
+                                        color: Colors.grey[600]),
+                                    SizedBox(width: 45),
+                                    Text(
+                                      _categories[index],
+                                      style: TextStyle(
+                                        fontSize: 17,
+                                        color: Colors.grey[600],
+                                      ),
+                                    )
+                                  ],
+                                );
+                              }),
                         ),
                     ],
                   ),
