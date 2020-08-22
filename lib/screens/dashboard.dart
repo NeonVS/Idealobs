@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 
 import '../widget/app_drawer.dart';
+import '../screens/category_screen.dart';
 
 class Dashboard extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -28,33 +29,42 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Welcome to idealobs'),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(30),
-          ),
+    final mediaQuery = MediaQuery.of(context);
+
+    final appBar = AppBar(
+      title: Text('Welcome to idealobs'),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(30),
         ),
-        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.8),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.shopping_cart,
-              color: Colors.black,
-            ),
-            onPressed: null,
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.person,
-              color: Colors.black,
-            ),
-            onPressed: null,
-          )
-        ],
       ),
+      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.8),
+      actions: [
+        IconButton(
+          icon: Icon(
+            Icons.shopping_cart,
+            color: Colors.black,
+          ),
+          onPressed: null,
+        ),
+        IconButton(
+          icon: Icon(
+            Icons.person,
+            color: Colors.black,
+          ),
+          onPressed: null,
+        )
+      ],
+    );
+    return Scaffold(
+      appBar: appBar,
       drawer: AppDrawer(),
+      body: Container(
+        height: mediaQuery.size.height -
+            appBar.preferredSize.height -
+            mediaQuery.padding.top,
+        child: CategoriesScreen(),
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         child: PopupMenuButton(
