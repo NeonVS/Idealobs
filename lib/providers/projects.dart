@@ -75,4 +75,47 @@ class Projects with ChangeNotifier {
       }
     }
   }
+
+  Future<void> fetchAndSetProjects() async {
+    try {
+      print('entered');
+      final responseData = await http
+          .get(serverBaseUrl + '/project/get_projects', headers: {
+        'Authorization': 'Bearer ' + token,
+        'Content-Type': 'application/json'
+      });
+      final response = json.decode(responseData.body);
+      final projects = response['projects'];
+      List<Project> _loadedItems = [];
+      projects.forEach(
+        (project) {
+          List<String> cat = [];
+          project['categories'].forEach((el) {
+            cat.insert(0, el.toString());
+          });
+          print(cat);
+          _loadedItems.insert(
+            0,
+            Project(
+              projectName: project['projectName'],
+              companyName: project['companyName'],
+              numColabs: project['numColabs'],
+              budget: project['budget'].toDouble(),
+              amountPayable: project['amountPayable'].toDouble(),
+              intro: project['intro'],
+              description: project['description'],
+              dateTime: DateTime.parse(project['dateTime'].toString()),
+              youtubeUrl: project['youtubeUrl'],
+              likes: project['likes'],
+              categories: cat,
+            ),
+          );
+        },
+      );
+      _items = _loadedItems;
+      print(_loadedItems);
+    } catch (error) {
+      throw HttpException('Server Error');
+    }
+  }
 }
