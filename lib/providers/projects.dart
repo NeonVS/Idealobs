@@ -1,11 +1,13 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:http/http.dart' as http;
 
 import './project.dart';
 
-const serverBaseUrl = 'https://4fa63b1644a1.ngrok.io';
+const serverBaseUrl = 'https://e1e553dc7b59.ngrok.io';
 
 class Projects with ChangeNotifier {
   List<Project> _items = [];
@@ -18,6 +20,23 @@ class Projects with ChangeNotifier {
   }
 
   Future<void> addProject(Project project, File image, File attachment) async {
+    try {
+      final check = await http.post(
+          serverBaseUrl + '/project/check_projectName',
+          body: json.encode({'projectName': project.projectName}),
+          headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+          });
+      final result = json.decode(check.body);
+      if (result['message'] == 'false') {
+        return throw HttpException(
+            'User can not have multiple projects with same name!');
+      }
+    } catch (error) {
+      return throw HttpException(
+          'User can not have multiple projects with same name!');
+    }
     try {
       print(userId);
       Response response;
@@ -42,10 +61,14 @@ class Projects with ChangeNotifier {
         serverBaseUrl + '/project/add_project',
         data: formData,
       );
-      print(response.data);
     } catch (error) {
       if (error.response.statusCode == 422) {
-        throw HttpException('Username already taken!');
+        try {
+          final message = json.decode(error.response.toString()).toString();
+          throw HttpException(message.split(":")[1].trim().split('}')[0]);
+        } catch (error) {
+          throw HttpException('Server Error, Please try after some time!');
+        }
       } else {
         throw HttpException('Server Error, Please try after some time!');
       }

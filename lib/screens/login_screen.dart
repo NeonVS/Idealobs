@@ -156,20 +156,22 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                     ),
-                  SizedBox(height: 20),
-                  SizedBox(
-                    height: 40,
-                    width: mediaQuery.width * 0.3,
-                    child: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(40),
+                  if (!_isLoading) SizedBox(height: 20),
+                  if (!_isLoading)
+                    SizedBox(
+                      height: 40,
+                      width: mediaQuery.width * 0.3,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        ),
+                        onPressed: () => _signup(context),
+                        color: Colors.grey,
+                        child: Text('Register ?',
+                            style:
+                                TextStyle(color: Colors.white, fontSize: 18)),
                       ),
-                      onPressed: () => _signup(context),
-                      color: Colors.grey,
-                      child: Text('Register ?',
-                          style: TextStyle(color: Colors.white, fontSize: 18)),
                     ),
-                  ),
                 ],
               ),
             ),

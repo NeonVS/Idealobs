@@ -31,14 +31,15 @@ class _AddNewProjectState extends State<AddNewProject> {
 
   bool _imageLoading = false;
   bool _fileLoading = false;
+  bool _isLoading = false;
 
-  DateTime selectedDate = DateTime.now();
+  DateTime selectedDate;
   final _form = GlobalKey<FormState>();
 
   _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
       context: context,
-      initialDate: selectedDate,
+      initialDate: DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2050),
     );
@@ -117,16 +118,6 @@ class _AddNewProjectState extends State<AddNewProject> {
       return;
     }
     _form.currentState.save();
-    print(_projectName);
-    print(_companyName);
-    print(_currentValue);
-    print(_budget);
-    print(_payment);
-    print(_intro);
-    print(_description);
-    print(_youtubeUrl);
-    print(_image);
-    print(_attachment);
     final project = new Project(
       projectName: _projectName,
       companyName: _companyName,
@@ -139,9 +130,31 @@ class _AddNewProjectState extends State<AddNewProject> {
       dateTime: selectedDate,
     );
     try {
+      setState(() {
+        _isLoading = true;
+      });
       await Provider.of<Projects>(context, listen: false)
           .addProject(project, _image, _attachment);
-    } catch (error) {}
+      Navigator.of(context).pushReplacementNamed('/dashboard');
+    } catch (error) {
+      return showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text('Some error has occurred!'),
+          content: Text(error.message.toString()),
+          actions: [
+            FlatButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Okay'),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -156,7 +169,7 @@ class _AddNewProjectState extends State<AddNewProject> {
         ),
       ),
       actions: [
-        IconButton(icon: Icon(Icons.save), onPressed: () {}),
+        IconButton(icon: Icon(Icons.save), onPressed: _save),
       ],
     );
 
@@ -169,6 +182,9 @@ class _AddNewProjectState extends State<AddNewProject> {
       color: Colors.orangeAccent,
       size: 25,
     );
+
+    final spinKitConfirm =
+        SpinKitWave(color: Theme.of(context).primaryColor, size: 50);
 
     return Scaffold(
       appBar: appBar,
@@ -404,24 +420,56 @@ class _AddNewProjectState extends State<AddNewProject> {
                       color: Colors.grey[400],
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Project should finish by?',
-                          style:
-                              TextStyle(fontSize: 17, color: Colors.grey[600]),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Project should finish by?',
+                              style: TextStyle(
+                                  fontSize: 17, color: Colors.grey[600]),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: FlatButton(
+                              child: Text('Pick Date'),
+                              onPressed: () => _selectDate(context),
+                            ),
+                          )
+                        ],
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: FlatButton(
-                          child: Text('Pick Date'),
-                          onPressed: () => _selectDate(context),
+                      if (selectedDate != null) Divider(),
+                      if (selectedDate != null)
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                selectedDate.day.toString() +
+                                    '/' +
+                                    selectedDate.month.toString() +
+                                    '/' +
+                                    selectedDate.year.toString(),
+                                style: TextStyle(
+                                    fontSize: 17, color: Colors.grey[600]),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  setState(
+                                    () {
+                                      selectedDate = null;
+                                    },
+                                  );
+                                },
+                              )
+                            ],
+                          ),
                         ),
-                      )
                     ],
                   ),
                 ),
@@ -483,55 +531,85 @@ class _AddNewProjectState extends State<AddNewProject> {
                       color: Colors.grey[400],
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
                     children: [
-                      Container(
-                        width: mediaQuery.size.width * 0.50,
-                        padding: const EdgeInsets.all(15.0),
-                        child: Text(
-                          'Please select document related to project!',
-                          softWrap: true,
-                          overflow: TextOverflow.fade,
-                          style: TextStyle(
-                            fontSize: 17,
-                            color: Colors.grey[600],
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                            width: mediaQuery.size.width * 0.50,
+                            padding: const EdgeInsets.all(15.0),
+                            child: Text(
+                              'Please select document related to project!',
+                              softWrap: true,
+                              overflow: TextOverflow.fade,
+                              style: TextStyle(
+                                fontSize: 17,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: mediaQuery.size.width * 0.30,
+                            child: _fileLoading
+                                ? spinKitFile
+                                : _attachment == null
+                                    ? FlatButton(
+                                        child: Text('Pick File'),
+                                        onPressed: _pickAttachment,
+                                      )
+                                    : Icon(
+                                        Icons.done,
+                                        color: Colors.green[200],
+                                      ),
+                          )
+                        ],
+                      ),
+                      if (_attachment != null) Divider(),
+                      if (_attachment != null)
+                        Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                '${_attachment.path.split('/').last.length > 31 ? _attachment.path.split('/').last.substring(0, 29) : _attachment.path.split('/').last}',
+                                style: TextStyle(
+                                    fontSize: 17, color: Colors.grey[600]),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete, color: Colors.red),
+                                onPressed: () {
+                                  setState(
+                                    () {
+                                      _attachment = null;
+                                    },
+                                  );
+                                },
+                              )
+                            ],
                           ),
                         ),
-                      ),
-                      Container(
-                        width: mediaQuery.size.width * 0.30,
-                        child: _fileLoading
-                            ? spinKitFile
-                            : _attachment == null
-                                ? FlatButton(
-                                    child: Text('Pick File'),
-                                    onPressed: _pickAttachment,
-                                  )
-                                : Icon(
-                                    Icons.done,
-                                    color: Colors.green[200],
-                                  ),
-                      )
                     ],
                   ),
                 ),
                 SizedBox(height: 30),
-                SizedBox(
-                  height: 50,
-                  width: mediaQuery.size.width * 0.6,
-                  child: RaisedButton(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    onPressed: _save,
-                    color: Theme.of(context).primaryColor,
-                    child: Text(
-                      'Confirm',
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+                if (_isLoading) spinKitConfirm,
+                if (!_isLoading)
+                  SizedBox(
+                    height: 50,
+                    width: mediaQuery.size.width * 0.6,
+                    child: RaisedButton(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      onPressed: _save,
+                      color: Theme.of(context).primaryColor,
+                      child: Text(
+                        'Confirm',
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
                     ),
                   ),
-                ),
                 SizedBox(height: 30),
               ],
             ),

@@ -10,7 +10,7 @@ import 'package:dio/dio.dart';
 import '../models/http_exception.dart';
 
 //const serverBaseUrl = 'http://localhost:3000';
-const serverBaseUrl = 'https://4fa63b1644a1.ngrok.io';
+const serverBaseUrl = 'https://e1e553dc7b59.ngrok.io';
 
 class Auth with ChangeNotifier {
   String _token;
@@ -118,7 +118,7 @@ class Auth with ChangeNotifier {
           'token': _token,
           'userId': _userId,
           'expiryDate':
-              DateTime.now().add(Duration(hours: 1)).toIso8601String(),
+              DateTime.now().add(Duration(minutes: 55)).toIso8601String(),
           'isVerified': true
         },
       );
