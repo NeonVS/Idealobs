@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-import 'package:liquid_progress_indicator/liquid_progress_indicator.dart';
 import 'package:flutter_plugin_pdf_viewer/flutter_plugin_pdf_viewer.dart';
 import '../providers/project.dart';
+import './new_request_screen.dart';
 import '../providers/projects.dart';
 
 const serverBaseUrl = 'https://a3fcd40c4bfb.ngrok.io';
@@ -244,7 +244,10 @@ class _ProjectDetailScreenState extends State<ProjectDetailScreen> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    onPressed: () => {},
+                    onPressed: () => {
+                      Navigator.of(context).pushNamed(AddNewRequest.routeName,
+                          arguments: project),
+                    },
                     color: Theme.of(context).primaryColor,
                     child: Text(
                       'Apply for it ?',

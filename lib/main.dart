@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import './providers/auth.dart';
 import './providers/projects.dart';
+import './providers/requests.dart';
 import './screens/auth_screen.dart';
 import './screens/login_screen.dart';
 import './screens/signup_screen.dart';
@@ -14,6 +15,7 @@ import './screens/new_project_screen.dart';
 import './screens/category_item_screen.dart';
 import './screens/project_detail_screen.dart';
 import './screens/pdf_view_screen.dart';
+import './screens/new_request_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,10 +31,18 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider<Auth, Projects>(
           update: (ctx, auth, previousProducts) => Projects(
-              auth.token,
-              auth.userId,
-              previousProducts == null ? [] : previousProducts.items),
-        )
+            auth.token,
+            auth.userId,
+            previousProducts == null ? [] : previousProducts.items,
+          ),
+        ),
+        ChangeNotifierProxyProvider<Auth, Requests>(
+          update: (ctx, auth, previousRequests) => Requests(
+            auth.token,
+            auth.userId,
+            previousRequests == null ? [] : previousRequests.requests,
+          ),
+        ),
       ],
       child: Consumer<Auth>(
         builder: (ctx, auth, _) => MaterialApp(
@@ -68,6 +78,7 @@ class MyApp extends StatelessWidget {
             CategoryItems.routeName: (ctx) => CategoryItems(),
             ProjectDetailScreen.routeName: (ctx) => ProjectDetailScreen(),
             PdfViewer.routeName: (ctx) => PdfViewer(),
+            AddNewRequest.routeName: (ctx) => AddNewRequest(),
           },
         ),
       ),

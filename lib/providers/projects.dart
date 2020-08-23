@@ -109,6 +109,7 @@ class Projects with ChangeNotifier {
               youtubeUrl: project['youtubeUrl'],
               likes: project['likes'],
               creator: project['creator'],
+              projectId: project['_id'],
               categories: cat,
             ),
           );
@@ -127,21 +128,21 @@ class Projects with ChangeNotifier {
     }).toList();
   }
 
-  static Future<void> downloadFile(String url, Function progressChange,
-      String projectName, String creator) async {
-    print(creator);
-    print(projectName);
-    Dio dio = Dio();
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      await dio.download(url, '${dir.path}/$projectName.pdf',
-          queryParameters: {'creator': creator, 'projectName': projectName},
-          onReceiveProgress: (rec, total) {
-        progressChange(rec, total);
-      });
-    } catch (error) {
-      print(error);
-      throw HttpException('Server Error');
-    }
-  }
+//   static Future<void> downloadFile(String url, Function progressChange,
+//       String projectName, String creator) async {
+//     print(creator);
+//     print(projectName);
+//     Dio dio = Dio();
+//     try {
+//       final dir = await getApplicationDocumentsDirectory();
+//       await dio.download(url, '${dir.path}/$projectName.pdf',
+//           queryParameters: {'creator': creator, 'projectName': projectName},
+//           onReceiveProgress: (rec, total) {
+//         progressChange(rec, total);
+//       });
+//     } catch (error) {
+//       print(error);
+//       throw HttpException('Server Error');
+//     }
+//   }
 }

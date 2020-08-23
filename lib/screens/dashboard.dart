@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
+import 'package:provider/provider.dart';
 
+import '../providers/requests.dart';
 import '../widget/app_drawer.dart';
+import '../widget/badge.dart';
 import '../screens/category_screen.dart';
 
 class Dashboard extends StatefulWidget {
@@ -18,6 +21,7 @@ class _DashboardState extends State<Dashboard> {
     // TODO: implement initState
     super.initState();
     currentIndex = 0;
+    Provider.of<Requests>(context, listen: false).fetchAndSetRequests();
   }
 
   void changePage(int index) {
@@ -47,13 +51,16 @@ class _DashboardState extends State<Dashboard> {
           ),
           onPressed: null,
         ),
-        IconButton(
-          icon: Icon(
-            Icons.person,
-            color: Colors.black,
+        Consumer<Requests>(
+          builder: (_, request, ch) => Badge(
+            child: ch,
+            value: request.requests.length.toString(),
           ),
-          onPressed: null,
-        )
+          child: IconButton(
+            icon: Icon(Icons.person),
+            onPressed: () {},
+          ),
+        ),
       ],
     );
     return Scaffold(

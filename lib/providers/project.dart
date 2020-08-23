@@ -13,6 +13,7 @@ class Project with ChangeNotifier {
   final String youtubeUrl;
   final String creator;
   final int likes;
+  final String projectId;
   Project(
       {@required this.projectName,
       @required this.companyName,
@@ -23,6 +24,7 @@ class Project with ChangeNotifier {
       @required this.description,
       @required this.dateTime,
       @required this.categories,
+      this.projectId,
       this.creator,
       this.youtubeUrl,
       this.likes});
