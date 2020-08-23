@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 
-class CategoryItem extends StatelessWidget {
-  static const routeName = '/category-meals';
+import '../screens/category_item_screen.dart';
 
-  String _title;
-  String _imageUrl;
+class CategoryItem extends StatelessWidget {
+  final String _title;
+  final String _imageUrl;
 
   CategoryItem(this._title, this._imageUrl);
-  void selectCategory(BuildContext ctx) {}
+  void selectCategory(BuildContext ctx) {
+    Navigator.of(ctx).pushNamed(CategoryItems.routeName, arguments: _title);
+  }
 
   @override
   Widget build(BuildContext context) {

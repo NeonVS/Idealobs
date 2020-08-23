@@ -11,6 +11,9 @@ import './screens/dashboard.dart';
 import './screens/profile_complete.dart';
 import './screens/splash_screen.dart';
 import './screens/new_project_screen.dart';
+import './screens/category_item_screen.dart';
+import './screens/project_detail_screen.dart';
+import './screens/pdf_view_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -62,6 +65,9 @@ class MyApp extends StatelessWidget {
             Dashboard.routeName: (ctx) => Dashboard(),
             ProfileComplete.routeName: (ctx) => ProfileComplete(),
             AddNewProject.routeName: (ctx) => AddNewProject(),
+            CategoryItems.routeName: (ctx) => CategoryItems(),
+            ProjectDetailScreen.routeName: (ctx) => ProjectDetailScreen(),
+            PdfViewer.routeName: (ctx) => PdfViewer(),
           },
         ),
       ),

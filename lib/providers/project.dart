@@ -11,6 +11,7 @@ class Project with ChangeNotifier {
   final DateTime dateTime;
   final List<String> categories;
   final String youtubeUrl;
+  final String creator;
   final int likes;
   Project(
       {@required this.projectName,
@@ -22,6 +23,7 @@ class Project with ChangeNotifier {
       @required this.description,
       @required this.dateTime,
       @required this.categories,
+      this.creator,
       this.youtubeUrl,
       this.likes});
 }

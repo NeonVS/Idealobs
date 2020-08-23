@@ -592,9 +592,6 @@ class _AddNewProjectState extends State<AddNewProject> {
                       ),
                       keyboardType: TextInputType.url,
                       validator: (value) {
-                        if (!value.contains('youtube')) {
-                          return 'Invalid URL';
-                        }
                         return null;
                       },
                       onSaved: (value) {

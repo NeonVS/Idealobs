@@ -4,10 +4,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 import './project.dart';
 
-const serverBaseUrl = 'https://e1e553dc7b59.ngrok.io';
+const serverBaseUrl = 'https://a3fcd40c4bfb.ngrok.io';
 
 class Projects with ChangeNotifier {
   List<Project> _items = [];
@@ -107,6 +108,7 @@ class Projects with ChangeNotifier {
               dateTime: DateTime.parse(project['dateTime'].toString()),
               youtubeUrl: project['youtubeUrl'],
               likes: project['likes'],
+              creator: project['creator'],
               categories: cat,
             ),
           );
@@ -115,6 +117,30 @@ class Projects with ChangeNotifier {
       _items = _loadedItems;
       print(_loadedItems);
     } catch (error) {
+      throw HttpException('Server Error');
+    }
+  }
+
+  List<Project> fetchByCategory(String category) {
+    return items.where((project) {
+      return project.categories.contains(category);
+    }).toList();
+  }
+
+  static Future<void> downloadFile(String url, Function progressChange,
+      String projectName, String creator) async {
+    print(creator);
+    print(projectName);
+    Dio dio = Dio();
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      await dio.download(url, '${dir.path}/$projectName.pdf',
+          queryParameters: {'creator': creator, 'projectName': projectName},
+          onReceiveProgress: (rec, total) {
+        progressChange(rec, total);
+      });
+    } catch (error) {
+      print(error);
       throw HttpException('Server Error');
     }
   }
