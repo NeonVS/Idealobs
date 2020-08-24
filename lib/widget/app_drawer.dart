@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../screens/login_screen.dart';
 import '../providers/auth.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -34,7 +35,7 @@ class AppDrawer extends StatelessWidget {
                       shape: BoxShape.circle,
                       image: DecorationImage(
                           image: NetworkImage(
-                              'https://lh3.googleusercontent.com/proxy/ncftxUnSbBA1Zjar8Nv-tqX0IJN0gZfxz8XEwwnLkWKOmjqyOLfLBWiCWabIsmnVq9xGh3qPkhTgviLxZnuVnx0qH7MTusO2pZgQIaJAqwCcnw-QHAgLpvs'),
+                              'https://images.unsplash.com/photo-1593642532973-d31b6557fa68?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=80'),
                           fit: BoxFit.fill),
                     ),
                   ),
@@ -69,8 +70,8 @@ class AppDrawer extends StatelessWidget {
             leading: Icon(Icons.exit_to_app),
             title: Text('Logout'),
             onTap: () {
-              Navigator.of(context).pop();
               Provider.of<Auth>(context, listen: false).logout();
+              Navigator.of(context).pushReplacementNamed('/login');
             },
           )
         ],

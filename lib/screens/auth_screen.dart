@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AuthScreen extends StatelessWidget {
+  static String routeName = '/auth_screen';
   void _login(BuildContext ctx) {
     Navigator.of(ctx).pushNamed('/login');
   }

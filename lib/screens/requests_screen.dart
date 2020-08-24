@@ -42,9 +42,9 @@ class RequestsScreen extends StatelessWidget {
                       width: 3,
                     ),
                     gradient: LinearGradient(
-                        begin: Alignment.topRight,
-                        end: Alignment.bottomLeft,
-                        colors: [Colors.orange[100], Colors.orange[800]]),
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [Colors.orange[100], Colors.orange[500]]),
                   ),
                   child: Row(
                     children: [

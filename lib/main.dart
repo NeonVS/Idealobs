@@ -17,6 +17,7 @@ import './screens/project_detail_screen.dart';
 import './screens/pdf_view_screen.dart';
 import './screens/new_request_screen.dart';
 import './screens/requests_screen.dart';
+import './screens/message_overview_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -63,8 +64,10 @@ class MyApp extends StatelessWidget {
                   builder: (ctx, authResultSnapshot) {
                     if (authResultSnapshot.connectionState ==
                         ConnectionState.waiting) {
+                      print('splash');
                       return SplashScreen();
                     } else {
+                      print('entry');
                       return AuthScreen();
                     }
                   },
@@ -81,6 +84,7 @@ class MyApp extends StatelessWidget {
             PdfViewer.routeName: (ctx) => PdfViewer(),
             AddNewRequest.routeName: (ctx) => AddNewRequest(),
             RequestsScreen.routeName: (ctx) => RequestsScreen(),
+            MessageOverviewScreen.routeName: (ctx) => MessageOverviewScreen(),
           },
         ),
       ),

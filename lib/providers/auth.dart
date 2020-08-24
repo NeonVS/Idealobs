@@ -18,8 +18,10 @@ class Auth with ChangeNotifier {
   Timer _authTimer;
   DateTime _expiryDate;
   bool _isVerified = false;
+  List<String> _enrolledProjects = [];
 
   bool get isAuth {
+    print('tried');
     if (token != null && _isVerified == true) {
       return true;
     } else {
@@ -40,6 +42,10 @@ class Auth with ChangeNotifier {
     return _userId;
   }
 
+  List<String> get enrolledProjects {
+    return [..._enrolledProjects];
+  }
+
   Future<void> signup(String email, String password) async {
     try {
       final responseData = await http.post(
@@ -57,6 +63,7 @@ class Auth with ChangeNotifier {
       }
       _token = response['token'].toString();
       _userId = response['userId'].toString();
+      print(response['enrolledProjects']);
       _expiryDate = DateTime.now().add(
         Duration(minutes: 55),
       );
@@ -94,6 +101,7 @@ class Auth with ChangeNotifier {
         },
       );
       prefs.setString('userData', userData);
+      prefs.setStringList("enrolledProjects", _enrolledProjects);
       notifyListeners();
     } catch (error) {
       throw error;
@@ -109,6 +117,9 @@ class Auth with ChangeNotifier {
       if (responseData.statusCode >= 400) {
         throw HttpException(response['message']);
       }
+      response['enrolledProjects'].forEach((projectId) {
+        _enrolledProjects.add(projectId.toString());
+      });
       _userId = response['userId'];
       _token = response['token'];
       _expiryDate = DateTime.now().add(Duration(minutes: 55));
@@ -119,11 +130,13 @@ class Auth with ChangeNotifier {
           'userId': _userId,
           'expiryDate':
               DateTime.now().add(Duration(minutes: 55)).toIso8601String(),
-          'isVerified': true
+          'isVerified': true,
         },
       );
       prefs.setString('userData', userData);
+      prefs.setStringList("enrolledProjects", _enrolledProjects);
       notifyListeners();
+      _autoLogout();
     } catch (error) {
       throw error;
     }
@@ -132,8 +145,16 @@ class Auth with ChangeNotifier {
   Future<bool> tryAutoLogin() async {
     print('entered');
     final prefs = await SharedPreferences.getInstance();
-    final extractedUserData =
-        json.decode(prefs.getString('userData')) as Map<String, Object>;
+    Map<String, Object> extractedUserData;
+    try {
+      extractedUserData =
+          json.decode(prefs.getString('userData')) as Map<String, Object>;
+    } catch (error) {
+      return false;
+    }
+    if (extractedUserData == null) {
+      return false;
+    }
     final expiryDate = DateTime.parse(extractedUserData['expiryDate']);
     if (!extractedUserData.containsKey('userId')) {
       return false;
@@ -149,6 +170,7 @@ class Auth with ChangeNotifier {
       return false;
     }
     _isVerified = extractedUserData['isVerified'];
+    _enrolledProjects = prefs.getStringList('enrolledProjects');
     notifyListeners();
     _autoLogout();
     return true;
@@ -162,10 +184,11 @@ class Auth with ChangeNotifier {
       _authTimer.cancel();
       _authTimer = null;
     }
-    notifyListeners();
+
     final prefs = await SharedPreferences.getInstance();
-    //prefs.remove('userData');
+    prefs.remove('userData');
     prefs.clear();
+    notifyListeners();
   }
 
   void _autoLogout() {

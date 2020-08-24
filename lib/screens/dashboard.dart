@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
+import '../providers/projects.dart';
 import '../providers/requests.dart';
 import '../widget/app_drawer.dart';
 import '../widget/badge.dart';
 import '../screens/category_screen.dart';
 import '../screens/requests_screen.dart';
+import '../screens/message_overview_screen.dart';
 
 class Dashboard extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -16,13 +19,56 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int currentIndex;
+  List<String> _title = [
+    'Welcome to idealobs',
+    'Shop',
+    'Contribute',
+    'Messages'
+  ];
+  List<Color> _colors = [
+    Colors.red,
+    Colors.deepPurple,
+    Colors.orange.withOpacity(0.8),
+    Colors.indigo
+  ];
+  Map<int, Widget> _body = {
+    0: CategoriesScreen(),
+    1: CategoriesScreen(),
+    2: CategoriesScreen(),
+    3: MessageOverviewScreen(),
+  };
+  bool _isLoading = false;
+  bool _isInit = true;
+  // Map<String, Color> _headColor = {'light': Colors.black, 'dark': Colors.white};
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     currentIndex = 0;
     Provider.of<Requests>(context, listen: false).fetchAndSetRequests();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    if (_isInit) {
+      _isInit = false;
+      setState(
+        () {
+          _isLoading = true;
+        },
+      );
+      Provider.of<Projects>(context, listen: false).fetchAndSetProjects().then(
+            (value) => setState(
+              () {
+                _isLoading = false;
+              },
+            ),
+          );
+    }
   }
 
   void changePage(int index) {
@@ -35,20 +81,29 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-
+    final spinKit =
+        SpinKitCubeGrid(color: Theme.of(context).primaryColor, size: 50);
     final appBar = AppBar(
-      title: Text('Welcome to idealobs'),
+      title: Text(
+        _title[currentIndex],
+        style: TextStyle(color: Colors.white),
+      ),
+      leading: IconButton(
+          icon: Icon(Icons.menu, color: Colors.white),
+          onPressed: () {
+            _scaffoldKey.currentState.openDrawer();
+          }),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           bottom: Radius.circular(30),
         ),
       ),
-      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.8),
+      backgroundColor: _colors[currentIndex],
       actions: [
         IconButton(
           icon: Icon(
             Icons.shopping_cart,
-            color: Colors.black,
+            color: Colors.white,
           ),
           onPressed: null,
         ),
@@ -59,6 +114,7 @@ class _DashboardState extends State<Dashboard> {
           ),
           child: IconButton(
             icon: Icon(Icons.person),
+            color: Colors.white,
             onPressed: () {
               Navigator.of(context).pushNamed(RequestsScreen.routeName);
             },
@@ -67,13 +123,15 @@ class _DashboardState extends State<Dashboard> {
       ],
     );
     return Scaffold(
+      key: _scaffoldKey,
       appBar: appBar,
       drawer: AppDrawer(),
+      backgroundColor: Colors.white,
       body: Container(
         height: mediaQuery.size.height -
             appBar.preferredSize.height -
             mediaQuery.padding.top,
-        child: CategoriesScreen(),
+        child: _isLoading ? Center(child: spinKit) : _body[currentIndex],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
@@ -105,7 +163,8 @@ class _DashboardState extends State<Dashboard> {
             Icons.add,
           ),
         ),
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: _colors[currentIndex],
+        foregroundColor: Colors.white,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       bottomNavigationBar: BubbleBottomBar(
@@ -146,25 +205,25 @@ class _DashboardState extends State<Dashboard> {
               ),
               title: Text("Shop")),
           BubbleBottomBarItem(
-              backgroundColor: Colors.indigo,
+              backgroundColor: Colors.orange.withOpacity(0.8),
               icon: Icon(
                 Icons.attach_money,
                 color: Colors.black,
               ),
               activeIcon: Icon(
                 Icons.attach_money,
-                color: Colors.indigo,
+                color: Colors.orange.withOpacity(0.8),
               ),
               title: Text("Contribute")),
           BubbleBottomBarItem(
-            backgroundColor: Colors.green,
+            backgroundColor: Colors.indigo,
             icon: Icon(
               Icons.message,
               color: Colors.black,
             ),
             activeIcon: Icon(
               Icons.message,
-              color: Colors.green,
+              color: Colors.indigo,
             ),
             title: Text("Messages"),
           )
