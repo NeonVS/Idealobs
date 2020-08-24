@@ -16,6 +16,7 @@ import './screens/category_item_screen.dart';
 import './screens/project_detail_screen.dart';
 import './screens/pdf_view_screen.dart';
 import './screens/new_request_screen.dart';
+import './screens/requests_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -79,6 +80,7 @@ class MyApp extends StatelessWidget {
             ProjectDetailScreen.routeName: (ctx) => ProjectDetailScreen(),
             PdfViewer.routeName: (ctx) => PdfViewer(),
             AddNewRequest.routeName: (ctx) => AddNewRequest(),
+            RequestsScreen.routeName: (ctx) => RequestsScreen(),
           },
         ),
       ),

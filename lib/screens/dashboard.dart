@@ -6,6 +6,7 @@ import '../providers/requests.dart';
 import '../widget/app_drawer.dart';
 import '../widget/badge.dart';
 import '../screens/category_screen.dart';
+import '../screens/requests_screen.dart';
 
 class Dashboard extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -58,7 +59,9 @@ class _DashboardState extends State<Dashboard> {
           ),
           child: IconButton(
             icon: Icon(Icons.person),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context).pushNamed(RequestsScreen.routeName);
+            },
           ),
         ),
       ],

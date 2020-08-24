@@ -10,7 +10,7 @@ import 'package:dio/dio.dart';
 import '../models/http_exception.dart';
 
 //const serverBaseUrl = 'http://localhost:3000';
-const serverBaseUrl = 'https://a3fcd40c4bfb.ngrok.io';
+const serverBaseUrl = 'https://be05bd88b3c7.ngrok.io';
 
 class Auth with ChangeNotifier {
   String _token;
