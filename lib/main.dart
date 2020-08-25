@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import './providers/auth.dart';
 import './providers/projects.dart';
 import './providers/requests.dart';
+import './providers/messages.dart';
 import './screens/auth_screen.dart';
 import './screens/login_screen.dart';
 import './screens/signup_screen.dart';
@@ -43,6 +44,13 @@ class MyApp extends StatelessWidget {
             auth.token,
             auth.userId,
             previousRequests == null ? [] : previousRequests.requests,
+          ),
+        ),
+        ChangeNotifierProxyProvider<Auth, Messages>(
+          update: (ctx, auth, previousMessages) => Messages(
+            auth.token,
+            auth.userId,
+            previousMessages == null ? [] : previousMessages.messages,
           ),
         ),
       ],

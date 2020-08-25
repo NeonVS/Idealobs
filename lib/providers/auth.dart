@@ -10,13 +10,14 @@ import 'package:dio/dio.dart';
 import '../models/http_exception.dart';
 
 //const serverBaseUrl = 'http://localhost:3000';
-const serverBaseUrl = 'https://be05bd88b3c7.ngrok.io';
+const serverBaseUrl = 'https://b4046dad2fa6.ngrok.io';
 
 class Auth with ChangeNotifier {
   String _token;
   String _userId;
   Timer _authTimer;
   DateTime _expiryDate;
+  String _username;
   bool _isVerified = false;
   List<String> _enrolledProjects = [];
 
@@ -44,6 +45,10 @@ class Auth with ChangeNotifier {
 
   List<String> get enrolledProjects {
     return [..._enrolledProjects];
+  }
+
+  String get username {
+    return _username;
   }
 
   Future<void> signup(String email, String password) async {
@@ -122,6 +127,7 @@ class Auth with ChangeNotifier {
       });
       _userId = response['userId'];
       _token = response['token'];
+      _username = response['username'];
       _expiryDate = DateTime.now().add(Duration(minutes: 55));
       final prefs = await SharedPreferences.getInstance();
       final userData = json.encode(
@@ -131,10 +137,12 @@ class Auth with ChangeNotifier {
           'expiryDate':
               DateTime.now().add(Duration(minutes: 55)).toIso8601String(),
           'isVerified': true,
+          'username': _username,
         },
       );
       prefs.setString('userData', userData);
       prefs.setStringList("enrolledProjects", _enrolledProjects);
+      print(_username);
       notifyListeners();
       _autoLogout();
     } catch (error) {
@@ -164,6 +172,7 @@ class Auth with ChangeNotifier {
     }
     _token = extractedUserData['token'];
     _userId = extractedUserData['userId'];
+    _username = extractedUserData['username'];
     _expiryDate = expiryDate;
     if (!extractedUserData.containsKey('isVerified') ||
         !extractedUserData['isVerified']) {
@@ -199,15 +208,15 @@ class Auth with ChangeNotifier {
     _authTimer = Timer(Duration(seconds: timeToExpiry), logout);
   }
 
-  Future<void> complete_profile(File _image, String _username, String _gender,
-      String _description) async {
+  Future<void> complete_profile(
+      File _image, String username, String _gender, String _description) async {
     print(_image);
     print(_token);
     try {
       Response response;
       Dio dio = new Dio();
       FormData formData = FormData.fromMap({
-        'username': _username,
+        'username': username,
         'gender': _gender,
         'description': _description,
         'image':
@@ -218,7 +227,22 @@ class Auth with ChangeNotifier {
         serverBaseUrl + '/auth/complete_profile',
         data: formData,
       );
+      _username = username;
+      final prefs = await SharedPreferences.getInstance();
+      final userData = json.encode(
+        {
+          'token': _token,
+          'userId': _userId,
+          'expiryDate':
+              DateTime.now().add(Duration(hours: 1)).toIso8601String(),
+          'isVerified': true,
+          'username': 'username',
+        },
+      );
+      prefs.setString('userData', userData);
+      prefs.setStringList("enrolledProjects", _enrolledProjects);
       print(response.data);
+      print(username);
     } catch (error) {
       if (error.response.statusCode == 422) {
         throw HttpException('Username already taken!');

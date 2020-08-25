@@ -88,16 +88,23 @@ class _DashboardState extends State<Dashboard> {
         _title[currentIndex],
         style: TextStyle(color: Colors.white),
       ),
+      elevation: currentIndex == 3 ? 0.0 : 10.0,
       leading: IconButton(
           icon: Icon(Icons.menu, color: Colors.white),
           onPressed: () {
             _scaffoldKey.currentState.openDrawer();
           }),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(30),
-        ),
-      ),
+      shape: currentIndex == 3
+          ? RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(0),
+              ),
+            )
+          : RoundedRectangleBorder(
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.circular(30),
+              ),
+            ),
       backgroundColor: _colors[currentIndex],
       actions: [
         IconButton(
@@ -226,7 +233,7 @@ class _DashboardState extends State<Dashboard> {
               color: Colors.indigo,
             ),
             title: Text("Messages"),
-          )
+          ),
         ],
       ),
     );

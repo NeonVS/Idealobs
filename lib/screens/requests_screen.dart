@@ -57,7 +57,7 @@ class RequestsScreen extends StatelessWidget {
                               shape: BoxShape.circle,
                               image: new DecorationImage(
                                 image: new NetworkImage(
-                                    'https://be05bd88b3c7.ngrok.io/auth/profile_pic?userId=${requests[index].userId}'),
+                                    'https://b4046dad2fa6.ngrok.io/auth/profile_pic?userId=${requests[index].userId}'),
                                 fit: BoxFit.cover,
                               ),
                               border: Border.all(
