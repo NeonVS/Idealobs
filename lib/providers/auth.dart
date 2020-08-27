@@ -10,7 +10,7 @@ import 'package:dio/dio.dart';
 import '../models/http_exception.dart';
 
 //const serverBaseUrl = 'http://localhost:3000';
-const serverBaseUrl = 'https://b4046dad2fa6.ngrok.io';
+const serverBaseUrl = 'https://6f8e78027884.ngrok.io';
 
 class Auth with ChangeNotifier {
   String _token;
@@ -105,8 +105,8 @@ class Auth with ChangeNotifier {
           'isVerified': true
         },
       );
-      prefs.setString('userData', userData);
-      prefs.setStringList("enrolledProjects", _enrolledProjects);
+      await prefs.setString('userData', userData);
+      await prefs.setStringList("enrolledProjects", _enrolledProjects);
       notifyListeners();
     } catch (error) {
       throw error;
@@ -195,8 +195,10 @@ class Auth with ChangeNotifier {
     }
 
     final prefs = await SharedPreferences.getInstance();
-    prefs.remove('userData');
-    prefs.clear();
+    await prefs.remove('enrolledProjects');
+    await prefs.remove('userData');
+    await prefs.clear();
+    print('cleared');
     notifyListeners();
   }
 
@@ -210,8 +212,6 @@ class Auth with ChangeNotifier {
 
   Future<void> complete_profile(
       File _image, String username, String _gender, String _description) async {
-    print(_image);
-    print(_token);
     try {
       Response response;
       Dio dio = new Dio();
@@ -220,7 +220,7 @@ class Auth with ChangeNotifier {
         'gender': _gender,
         'description': _description,
         'image':
-            await MultipartFile.fromFile(_image.path, filename: '$_userId.png')
+            await MultipartFile.fromFile(_image.path, filename: '$username.png')
       });
       dio.options.headers['Authorization'] = 'Bearer ' + _token;
       response = await dio.post(
@@ -250,5 +250,13 @@ class Auth with ChangeNotifier {
         throw HttpException('Server Error, Please try after some time!');
       }
     }
+  }
+
+  Future<void> addEnrolledProject(String projectId) async {
+    print(projectId);
+    _enrolledProjects.add(projectId);
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setStringList("enrolledProjects", _enrolledProjects);
+    notifyListeners();
   }
 }

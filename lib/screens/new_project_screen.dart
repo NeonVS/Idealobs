@@ -11,6 +11,7 @@ import '../widget/category_selector.dart';
 
 import '../providers/project.dart';
 import '../providers/projects.dart';
+import '../providers/auth.dart';
 
 import '../helpers/category.dart';
 
@@ -171,8 +172,10 @@ class _AddNewProjectState extends State<AddNewProject> {
       setState(() {
         _isLoading = true;
       });
-      await Provider.of<Projects>(context, listen: false)
+      final projectId = await Provider.of<Projects>(context, listen: false)
           .addProject(project, _image, _attachment);
+      await Provider.of<Auth>(context, listen: false)
+          .addEnrolledProject(projectId);
       Navigator.of(context).pushReplacementNamed('/dashboard');
     } catch (error) {
       return showDialog(

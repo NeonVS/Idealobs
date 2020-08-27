@@ -13,7 +13,7 @@ import '../providers/auth.dart';
 
 import './message_screen.dart';
 
-const serverBaseUrl = 'https://b4046dad2fa6.ngrok.io';
+const serverBaseUrl = 'https://6f8e78027884.ngrok.io';
 
 class MessageOverviewScreen extends StatefulWidget {
   static const routeName = '/message_overview_screen';
@@ -50,11 +50,11 @@ class _MessageOverviewScreenState extends State<MessageOverviewScreen> {
       _enrolledProject.forEach((project) {
         SocketIO socketIO;
         socketIO = SocketIOManager().createSocketIO(
-            'https://b4046dad2fa6.ngrok.io', '/',
+            'https://6f8e78027884.ngrok.io', '/dynamic-${project.projectId}',
             query: 'chatID=${project.projectId}');
         socketIO.init();
         socketIO.subscribe(
-          'receive_message',
+          'receive-message',
           (jsonData) {
             Map<String, dynamic> data = json.decode(jsonData);
             final _message = Message(
@@ -66,12 +66,44 @@ class _MessageOverviewScreenState extends State<MessageOverviewScreen> {
                   'senderUsername': data['senderUsername'].toString(),
                   'text': data['text'].toString(),
                 });
+            print('added');
+
             _messages.addMessage(_message);
+            setState(() {});
           },
         );
         socketIO.connect();
+
         _socketIO.add(socketIO);
       });
+      ////
+      // SocketIO socketIOs;
+      // socketIOs = SocketIOManager().createSocketIO(
+      //     'https://6f8e78027884.ngrok.io', '/',
+      //     query: 'chatID=5f461a888dfe980d90ce8d0a');
+      // socketIOs.init();
+      // socketIOs.subscribe(
+      //   'receive_message',
+      //   (jsonData) {
+      //     print('----------------------------------');
+      //     Map<String, dynamic> data = json.decode(jsonData);
+      //     final _message = Message(
+      //         projectId: data['projectId'].toString(),
+      //         projectName: data['projectName'].toString(),
+      //         dateTime: DateTime.parse(data['dateTime']),
+      //         message: {
+      //           'senderId': data['senderId'].toString(),
+      //           'senderUsername': data['senderUsername'].toString(),
+      //           'text': data['text'].toString(),
+      //         });
+      //     print('added');
+
+      //     _messages.addMessage(_message);
+      //     setState(() {});
+      //   },
+      // );
+      // socketIOs.connect();
+      ////
     }
   }
 
@@ -79,7 +111,8 @@ class _MessageOverviewScreenState extends State<MessageOverviewScreen> {
   Widget build(BuildContext context) {
     print('build');
     final mediaQuery = MediaQuery.of(context);
-    final _messages = Provider.of<Messages>(context);
+    final _messages = Provider.of<Messages>(context, listen: true);
+    print('rebuild');
     return LayoutBuilder(
       builder: (ctx, constraints) {
         return Container(
@@ -110,12 +143,12 @@ class _MessageOverviewScreenState extends State<MessageOverviewScreen> {
                             MaterialPageRoute(
                               builder: (BuildContext context) => MessageScreen(
                                 _enrolledProject[index],
-                                _socketIO[index],
                                 _messages.messages
                                     .where((message) =>
                                         message.projectId ==
                                         _enrolledProject[index].projectId)
                                     .toList(),
+                                _socketIO[index],
                               ),
                             ),
                           );

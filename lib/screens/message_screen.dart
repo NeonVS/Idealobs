@@ -11,21 +11,23 @@ import '../providers/project.dart';
 import '../providers/message.dart';
 import '../providers/messages.dart';
 
-const serverBaseUrl = 'https://b4046dad2fa6.ngrok.io';
+const serverBaseUrl = 'https://6f8e78027884.ngrok.io';
 
 class MessageScreen extends StatefulWidget {
   Project _project;
   SocketIO _socketIO;
   List<Message> _messages;
 
-  MessageScreen(this._project, this._socketIO, this._messages);
+  MessageScreen(this._project, this._messages, this._socketIO);
   @override
   _MessageScreenState createState() => _MessageScreenState();
 }
 
 class _MessageScreenState extends State<MessageScreen> {
+  //SocketIO socketIO;
+  bool _isInit = true;
   final _controller = TextEditingController();
-  @override
+
   void _sendMessage(String text) {
     Messages _messages = Provider.of<Messages>(context, listen: false);
     final _auth = Provider.of<Auth>(context, listen: false);
@@ -49,7 +51,7 @@ class _MessageScreenState extends State<MessageScreen> {
         'text': text,
       }),
     );
-    _messages.addMessage(message);
+    //_messages.addMessage(message);
   }
 
   // _buildMessage(String message, bool isMe) {
@@ -215,6 +217,85 @@ class _MessageScreenState extends State<MessageScreen> {
         ],
       ),
     );
+  }
+
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+
+  //   socketIO = SocketIOManager().createSocketIO(
+  //       'https://6f8e78027884.ngrok.io', '/',
+  //       query: 'chatID=${widget._project.projectId}');
+  //   socketIO.init();
+  //   socketIO.subscribe('receive_message', (_) {
+  //     print('hellooo');
+  //   });
+  //   socketIO.connect();
+  // }
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    // if (_isInit) {
+    //   _isInit = false;
+    //   final _messages = Provider.of<Messages>(context, listen: false);
+    //   socketIO = SocketIOManager().createSocketIO(
+    //     'https://6f8e78027884.ngrok.io',
+    //     '/',
+    //     query: 'chatID=${widget._project.projectId}',
+    //   );
+    //   socketIO.init();
+    //   socketIO.subscribe(
+    //     'receive_message',
+    //     (jsonData) {
+    //       Map<String, dynamic> data = json.decode(jsonData);
+    //       final _message = Message(
+    //           projectId: data['projectId'].toString(),
+    //           projectName: data['projectName'].toString(),
+    //           dateTime: DateTime.parse(data['dateTime']),
+    //           message: {
+    //             'senderId': data['senderId'].toString(),
+    //             'senderUsername': data['senderUsername'].toString(),
+    //             'text': data['text'].toString(),
+    //           });
+    //       print('added');
+
+    //       _messages.addMessage(_message);
+    //       setState(() {});
+    //     },
+    //   );
+    //   socketIO.connect();
+
+    ///////////////////////////////////
+    //   SocketIO _socketIO;
+    //   _socketIO = SocketIOManager().createSocketIO(
+    //     'https://6f8e78027884.ngrok.io',
+    //     '/dynamic-101',
+    //     query: 'chatID=5f43b23866de3d529c6245cf',
+    //   );
+    //   _socketIO.init();
+    //   _socketIO.connect();
+    //   ///////////////////////////////////
+    //   SocketIO __socketIO;
+    //   __socketIO = SocketIOManager().createSocketIO(
+    //     'https://6f8e78027884.ngrok.io',
+    //     '/dynamic-103',
+    //     query: 'chatID=5f43b23866de3d529c6245cf',
+    //   );
+    //   __socketIO.init();
+    //   __socketIO.connect();
+    //}
+    ///////////////////////////////////
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    // socketIO.disconnect();
+    // SocketIOManager().destroySocket(socketIO);
+    // socketIO.destroy();
+    // socketIO = null;
   }
 
   @override

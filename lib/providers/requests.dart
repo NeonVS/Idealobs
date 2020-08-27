@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 import './request.dart';
 
-const serverBaseUrl = 'https://b4046dad2fa6.ngrok.io';
+const serverBaseUrl = 'https://6f8e78027884.ngrok.io';
 
 class Requests with ChangeNotifier {
   List<Request> _requests = [];
@@ -86,5 +86,50 @@ class Requests with ChangeNotifier {
     } catch (error) {
       print(error);
     }
+  }
+
+  Future<void> confirmRequest(Request request) async {
+    try {
+      final response = await http.post(
+        serverBaseUrl + '/request/confirm_request',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: json.encode(
+          {
+            'projectId': request.projectId,
+            'userId': request.userId,
+          },
+        ),
+      );
+    } catch (error) {
+      throw HttpException('Server Error, Please try after some time!');
+    }
+  }
+
+  Future<void> denyRequest(Request request) async {
+    try {
+      final response = await http.post(
+        serverBaseUrl + '/request/deny_request',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body: json.encode(
+          {
+            'projectId': request.projectId,
+            'userId': request.userId,
+          },
+        ),
+      );
+    } catch (error) {
+      throw HttpException('Server Error, Please try after some time!');
+    }
+  }
+
+  Future<void> removeRequest(Request request) {
+    _requests.remove(request);
+    notifyListeners();
   }
 }

@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 import './project.dart';
 
-const serverBaseUrl = 'https://b4046dad2fa6.ngrok.io';
+const serverBaseUrl = 'https://6f8e78027884.ngrok.io';
 
 class Projects with ChangeNotifier {
   List<Project> _items = [];
@@ -19,7 +19,8 @@ class Projects with ChangeNotifier {
     return [..._items];
   }
 
-  Future<void> addProject(Project project, File image, File attachment) async {
+  Future<String> addProject(
+      Project project, File image, File attachment) async {
     try {
       final check = await http.post(
           serverBaseUrl + '/project/check_projectName',
@@ -62,6 +63,7 @@ class Projects with ChangeNotifier {
         serverBaseUrl + '/project/add_project',
         data: formData,
       );
+      return response.data['projectId'];
     } catch (error) {
       if (error.response.statusCode == 422) {
         try {
@@ -115,6 +117,7 @@ class Projects with ChangeNotifier {
         },
       );
       _items = _loadedItems;
+
       print(_loadedItems);
     } catch (error) {
       throw HttpException('Server Error');

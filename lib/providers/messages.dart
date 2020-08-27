@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import './message.dart';
 
-const serverBaseUrl = 'https://b4046dad2fa6.ngrok.io';
+const serverBaseUrl = 'https://6f8e78027884.ngrok.io';
 
 class Messages with ChangeNotifier {
   String _token;
@@ -23,7 +23,6 @@ class Messages with ChangeNotifier {
   }
 
   void fetchAndSetMessages() async {
-    print('lol');
     try {
       final responseData = await http.get(serverBaseUrl + '/message/messages',
           headers: {
