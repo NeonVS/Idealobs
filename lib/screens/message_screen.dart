@@ -51,6 +51,8 @@ class _MessageScreenState extends State<MessageScreen> {
         'text': text,
       }),
     );
+    _controller.text = '';
+    FocusScope.of(context).unfocus();
     //_messages.addMessage(message);
   }
 
@@ -110,8 +112,8 @@ class _MessageScreenState extends State<MessageScreen> {
   //   );
   // }
 
-  Stack _messageBubble(
-      String message, String userName, String userImage, bool _isMe) {
+  Stack _messageBubble(String message, String userName, String userImage,
+      bool _isMe, DateTime dateTime) {
     return Stack(
       children: [
         Row(
@@ -120,7 +122,7 @@ class _MessageScreenState extends State<MessageScreen> {
           children: [
             Container(
               decoration: BoxDecoration(
-                color: _isMe ? Colors.grey[300] : Theme.of(context).accentColor,
+                color: _isMe ? Colors.grey[300] : Color(0xFFFEF9EB),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),
@@ -161,6 +163,30 @@ class _MessageScreenState extends State<MessageScreen> {
                       ),
                       textAlign: _isMe ? TextAlign.end : TextAlign.start,
                     ),
+                    SizedBox(height: 5),
+                    Row(
+                      children: [
+                        if (_isMe)
+                          Expanded(
+                            child: Text(
+                              '${dateTime.hour.toString()}:${dateTime.minute.toString()}',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        if (!_isMe) Spacer(),
+                        if (!_isMe)
+                          Text(
+                            '${dateTime.hour.toString()}:${dateTime.minute.toString()}',
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                      ],
+                    )
                   ]),
             ),
           ],
@@ -177,7 +203,7 @@ class _MessageScreenState extends State<MessageScreen> {
               radius: 25,
             ),
           ),
-        )
+        ),
       ],
       overflow: Overflow.visible, //So that avatar is not cropped
     );
@@ -308,16 +334,32 @@ class _MessageScreenState extends State<MessageScreen> {
     var messages = List.from(reversedList.reversed);
     return Scaffold(
       appBar: AppBar(
+        leading: BackButton(color: Colors.white),
         backgroundColor: Colors.indigo,
         centerTitle: true,
         elevation: 0,
-        title: Text(
-          widget._project.projectName,
-          style: TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+        title: Row(
+          children: [
+            Text(
+              widget._project.projectName,
+              style: TextStyle(
+                fontSize: 20.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Spacer(),
+            Hero(
+              tag: widget._project.projectId,
+              child: CircleAvatar(
+                backgroundImage: NetworkImage(
+                  serverBaseUrl +
+                      '/project/project_image?creator=${widget._project.creator}&projectName=${widget._project.projectName.replaceAll(' ', '%20')}',
+                ),
+                radius: 20,
+              ),
+            )
+          ],
         ),
       ),
       backgroundColor: Colors.indigo,
@@ -356,6 +398,7 @@ class _MessageScreenState extends State<MessageScreen> {
                           serverBaseUrl +
                               '/auth/profile_pic?username=${messages[index].message['senderUsername']}',
                           isMe,
+                          messages[index].dateTime,
                         );
                       },
                     ),

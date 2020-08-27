@@ -27,11 +27,6 @@ class _MessageOverviewScreenState extends State<MessageOverviewScreen> {
   List<String> _enrolledProjectIds;
   List<Project> _enrolledProject;
   List<SocketIO> _socketIO = [];
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   @override
   void didChangeDependencies() {
@@ -108,6 +103,18 @@ class _MessageOverviewScreenState extends State<MessageOverviewScreen> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _socketIO.forEach((socketIO) {
+      socketIO.disconnect();
+      SocketIOManager().destroySocket(socketIO);
+      socketIO.destroy();
+      socketIO = null;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     print('build');
     final mediaQuery = MediaQuery.of(context);
@@ -175,11 +182,14 @@ class _MessageOverviewScreenState extends State<MessageOverviewScreen> {
                             children: [
                               Row(
                                 children: [
-                                  CircleAvatar(
-                                    radius: 35,
-                                    backgroundImage: NetworkImage(
-                                      serverBaseUrl +
-                                          '/project/project_image?creator=${_enrolledProject[index].creator}&projectName=${_enrolledProject[index].projectName.replaceAll(' ', '%20')}',
+                                  Hero(
+                                    tag: _enrolledProject[index].projectId,
+                                    child: CircleAvatar(
+                                      radius: 35,
+                                      backgroundImage: NetworkImage(
+                                        serverBaseUrl +
+                                            '/project/project_image?creator=${_enrolledProject[index].creator}&projectName=${_enrolledProject[index].projectName.replaceAll(' ', '%20')}',
+                                      ),
                                     ),
                                   ),
                                   SizedBox(width: 10.0),
