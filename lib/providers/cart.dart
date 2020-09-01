@@ -2,13 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 import '../models/http_exception.dart';
 import '../models/place.dart';
 import './product.dart';
 
-const serverBaseUrl = 'https://064031598b44.ngrok.io';
+const serverBaseUrl = 'https://0a7ef1bd2657.ngrok.io';
 
 class CartItem {
   final Product product;
@@ -147,10 +146,10 @@ class Cart with ChangeNotifier {
       });
       _items = _loadedItems;
       isLoaded = true;
-      notifyListeners();
+      //notifyListeners();
     } catch (error) {
       print(error);
-      throw HttpException('Server Error, Please try after some time!');
+      throw HttpException('Server Error, Please try after some time! ok?');
     }
   }
 

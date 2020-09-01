@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
+import '../providers/order.dart';
 import '../providers/cart.dart';
-import '../helpers/razorPayHandler.dart';
 import '../widget/cart_item_card.dart';
 
 class CartScreen extends StatefulWidget {
@@ -28,6 +28,30 @@ class _CartScreenState extends State<CartScreen> {
     razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, handlerExternalWallet);
   }
 
+  void handlerPaymentSuccess(_) async {
+    print('Payment Success');
+    final order = Provider.of<Orders>(context, listen: false);
+    List<OrderItem> _items = [];
+    _orderItems.forEach((element) {
+      _items.add(OrderItem(
+          product: element.product,
+          quantity: element.quantity,
+          price: element.price));
+    });
+    await order.addItem(_items);
+    for (CartItem item in _orderItems) {
+      await deleteCartItem(item);
+    }
+  }
+
+  void handlerErrorFailure(_) {
+    print('Payment Error');
+  }
+
+  void handlerExternalWallet(_) {
+    print('ExternalWallet');
+  }
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -38,7 +62,7 @@ class _CartScreenState extends State<CartScreen> {
   void openCheckout() {
     final options = {
       'key': 'rzp_test_WcZxVUgP1f9PlM',
-      'amount': _total*100,
+      'amount': _total * 100,
       'name': 'Idealobs',
       'description': 'Payment for your products!',
       'prefill': {'contact': '', 'email': ''},
@@ -120,7 +144,7 @@ class _CartScreenState extends State<CartScreen> {
     print(_orderItems);
   }
 
-  void deleteCartItem(CartItem item) async {
+  Future<void> deleteCartItem(CartItem item) async {
     try {
       addAndRemoveOrderItems(false, item);
       await Provider.of<Cart>(context, listen: false).deleteItem(item);
@@ -202,6 +226,19 @@ class _CartScreenState extends State<CartScreen> {
                                 fontFamily: 'Montserrat',
                                 fontWeight: FontWeight.w500,
                                 color: Color.fromRGBO(246, 246, 246, 1)),
+                          ),
+                        ),
+                        Positioned(
+                          top: 38,
+                          right: 15,
+                          child: IconButton(
+                            alignment: Alignment.topLeft,
+                            icon: Icon(Icons.playlist_add_check,
+                                color: Colors.white),
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pushReplacementNamed('/order_screen');
+                            },
                           ),
                         ),
                         Padding(

@@ -8,6 +8,7 @@ import './providers/requests.dart';
 import './providers/messages.dart';
 import './providers/products.dart';
 import './providers/cart.dart';
+import './providers/order.dart';
 import './screens/auth_screen.dart';
 import './screens/login_screen.dart';
 import './screens/signup_screen.dart';
@@ -24,6 +25,7 @@ import './screens/requests_screen.dart';
 import './screens/message_overview_screen.dart';
 import './screens/new_product_screen.dart';
 import './screens/cart_screen.dart';
+import './screens/order_screen.dart';
 
 void main() {
   SdkContext.init(IsolateOrigin.main);
@@ -73,6 +75,13 @@ class MyApp extends StatelessWidget {
             previousCart == null ? [] : previousCart.items,
           ),
         ),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          update: (ctx, auth, previousOrders) => Orders(
+            auth.token,
+            auth.userId,
+            previousOrders == null ? [] : previousOrders.items,
+          ),
+        ),
       ],
       child: Consumer<Auth>(
         builder: (ctx, auth, _) => MaterialApp(
@@ -115,6 +124,7 @@ class MyApp extends StatelessWidget {
             MessageOverviewScreen.routeName: (ctx) => MessageOverviewScreen(),
             NewProductScreen.routeName: (ctx) => NewProductScreen(),
             CartScreen.routeName: (ctx) => CartScreen(),
+            OrderScreen.routeName: (ctx) => OrderScreen(),
           },
         ),
       ),

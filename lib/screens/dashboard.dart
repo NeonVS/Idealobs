@@ -189,19 +189,30 @@ class _DashboardState extends State<Dashboard> {
             Navigator.of(context).pushNamed('/cart_screen');
           },
         ),
-        Consumer<Requests>(
-          builder: (_, request, ch) => Badge(
-            child: ch,
-            value: request.requests.length.toString(),
-          ),
-          child: IconButton(
-            icon: Icon(Icons.person),
-            color: Colors.white,
+        if (currentIndex == 1)
+          IconButton(
+            icon: Icon(
+              Icons.playlist_add_check,
+              color: Colors.white,
+            ),
             onPressed: () {
-              Navigator.of(context).pushNamed(RequestsScreen.routeName);
+              Navigator.of(context).pushNamed('/order_screen');
             },
           ),
-        ),
+        if (currentIndex == 2)
+          Consumer<Requests>(
+            builder: (_, request, ch) => Badge(
+              child: ch,
+              value: request.requests.length.toString(),
+            ),
+            child: IconButton(
+              icon: Icon(Icons.person),
+              color: Colors.white,
+              onPressed: () {
+                Navigator.of(context).pushNamed(RequestsScreen.routeName);
+              },
+            ),
+          ),
       ],
     );
     return Scaffold(

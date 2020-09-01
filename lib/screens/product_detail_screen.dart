@@ -4,7 +4,7 @@ import '../providers/product.dart';
 import '../providers/products.dart';
 import '../providers/cart.dart';
 
-const serverBaseUrl = 'https://064031598b44.ngrok.io';
+const serverBaseUrl = 'https://0a7ef1bd2657.ngrok.io';
 
 class ProductDetailScreen extends StatefulWidget {
   Product _product;
