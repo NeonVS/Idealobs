@@ -13,7 +13,7 @@ import '../providers/auth.dart';
 
 import './message_screen.dart';
 
-const serverBaseUrl = 'https://6f8e78027884.ngrok.io';
+const serverBaseUrl = 'https://064031598b44.ngrok.io';
 
 class MessageOverviewScreen extends StatefulWidget {
   static const routeName = '/message_overview_screen';
@@ -42,63 +42,36 @@ class _MessageOverviewScreenState extends State<MessageOverviewScreen> {
       _enrolledProject = _projects.where((project) {
         return _enrolledProjectIds.contains(project.projectId);
       }).toList();
-      _enrolledProject.forEach((project) {
-        SocketIO socketIO;
-        socketIO = SocketIOManager().createSocketIO(
-            'https://6f8e78027884.ngrok.io', '/dynamic-${project.projectId}',
-            query: 'chatID=${project.projectId}');
-        socketIO.init();
-        socketIO.subscribe(
-          'receive-message',
-          (jsonData) {
-            Map<String, dynamic> data = json.decode(jsonData);
-            final _message = Message(
-                projectId: data['projectId'].toString(),
-                projectName: data['projectName'].toString(),
-                dateTime: DateTime.parse(data['dateTime']),
-                message: {
-                  'senderId': data['senderId'].toString(),
-                  'senderUsername': data['senderUsername'].toString(),
-                  'text': data['text'].toString(),
-                });
-            print('added');
+      _enrolledProject.forEach(
+        (project) {
+          SocketIO socketIO;
+          socketIO = SocketIOManager().createSocketIO(
+              'https://064031598b44.ngrok.io', '/dynamic-${project.projectId}',
+              query: 'chatID=${project.projectId}');
+          socketIO.init();
+          socketIO.subscribe(
+            'receive-message',
+            (jsonData) {
+              Map<String, dynamic> data = json.decode(jsonData);
+              final _message = Message(
+                  projectId: data['projectId'].toString(),
+                  projectName: data['projectName'].toString(),
+                  dateTime: DateTime.parse(data['dateTime']),
+                  message: {
+                    'senderId': data['senderId'].toString(),
+                    'senderUsername': data['senderUsername'].toString(),
+                    'text': data['text'].toString(),
+                  });
+              print('added');
 
-            _messages.addMessage(_message);
-            setState(() {});
-          },
-        );
-        socketIO.connect();
-
-        _socketIO.add(socketIO);
-      });
-      ////
-      // SocketIO socketIOs;
-      // socketIOs = SocketIOManager().createSocketIO(
-      //     'https://6f8e78027884.ngrok.io', '/',
-      //     query: 'chatID=5f461a888dfe980d90ce8d0a');
-      // socketIOs.init();
-      // socketIOs.subscribe(
-      //   'receive_message',
-      //   (jsonData) {
-      //     print('----------------------------------');
-      //     Map<String, dynamic> data = json.decode(jsonData);
-      //     final _message = Message(
-      //         projectId: data['projectId'].toString(),
-      //         projectName: data['projectName'].toString(),
-      //         dateTime: DateTime.parse(data['dateTime']),
-      //         message: {
-      //           'senderId': data['senderId'].toString(),
-      //           'senderUsername': data['senderUsername'].toString(),
-      //           'text': data['text'].toString(),
-      //         });
-      //     print('added');
-
-      //     _messages.addMessage(_message);
-      //     setState(() {});
-      //   },
-      // );
-      // socketIOs.connect();
-      ////
+              _messages.addMessage(_message);
+              setState(() {});
+            },
+          );
+          socketIO.connect();
+          _socketIO.add(socketIO);
+        },
+      );
     }
   }
 

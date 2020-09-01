@@ -5,7 +5,7 @@ import '../providers/project.dart';
 import './new_request_screen.dart';
 import '../providers/projects.dart';
 
-const serverBaseUrl = 'https://6f8e78027884.ngrok.io';
+const serverBaseUrl = 'https://064031598b44.ngrok.io';
 
 class ProjectDetailScreen extends StatefulWidget {
   static String routeName = '/project_detail_screen';

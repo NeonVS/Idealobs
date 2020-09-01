@@ -5,11 +5,14 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 import '../providers/projects.dart';
 import '../providers/requests.dart';
+import '../providers/products.dart';
+import '../providers/cart.dart';
 import '../widget/app_drawer.dart';
 import '../widget/badge.dart';
 import '../screens/category_screen.dart';
 import '../screens/requests_screen.dart';
 import '../screens/message_overview_screen.dart';
+import '../screens/shop_screen.dart';
 
 class Dashboard extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -21,6 +24,9 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int currentIndex;
+  bool _areCategoriesLoading = false;
+  bool _areProductsLoading = false;
+  bool _isInit = true;
   List<String> _title = [
     'Welcome to idealobs',
     'Shop',
@@ -35,12 +41,44 @@ class _DashboardState extends State<Dashboard> {
   ];
   Map<int, Widget> _body = {
     0: CategoriesScreen(),
-    1: CategoriesScreen(),
+    1: ShopScreen(),
     2: CategoriesScreen(),
     3: MessageOverviewScreen(),
   };
-  bool _isLoading = false;
-  bool _isInit = true;
+
+  Widget body(int index) {
+    if (currentIndex == 0) {
+      if (_areProductsLoading) {
+        return spinkit(Colors.deepPurple);
+      }
+      return ShopScreen();
+    }
+    if (currentIndex == 1) {
+      if (_areProductsLoading) {
+        return spinkit(Colors.deepPurple);
+      }
+      return ShopScreen();
+    }
+    if (currentIndex == 2) {
+      if (_areCategoriesLoading) {
+        return spinkit(Theme.of(context).primaryColor);
+      }
+      return CategoriesScreen();
+    }
+    if (currentIndex == 3) {
+      return MessageOverviewScreen();
+    }
+  }
+
+  Widget spinkit(Color color) {
+    return Center(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(100),
+        child: SpinKitCubeGrid(color: color, size: 50),
+      ),
+    );
+  }
+
   // Map<String, Color> _headColor = {'light': Colors.black, 'dark': Colors.white};
   @override
   void initState() {
@@ -58,16 +96,61 @@ class _DashboardState extends State<Dashboard> {
       _isInit = false;
       setState(
         () {
-          _isLoading = true;
+          _areCategoriesLoading = true;
+          _areProductsLoading = true;
         },
       );
       Provider.of<Projects>(context, listen: false).fetchAndSetProjects().then(
             (value) => setState(
               () {
-                _isLoading = false;
+                _areCategoriesLoading = false;
               },
             ),
           );
+      Provider.of<Cart>(context, listen: false)
+          .fetchAndSetCartItems()
+          .then((value) {
+        Provider.of<Products>(context, listen: false)
+            .fetchAndSetProducts()
+            .then(
+              (value) => setState(
+                () {
+                  _areProductsLoading = false;
+                },
+              ),
+            );
+      });
+    }
+  }
+
+  RoundedRectangleBorder shape(index) {
+    if (index == 0) {
+      return RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(30),
+        ),
+      );
+    }
+    if (index == 1) {
+      return RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(0),
+        ),
+      );
+    }
+    if (index == 2) {
+      return RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(30),
+        ),
+      );
+    }
+    if (index == 3) {
+      return RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(0),
+        ),
+      );
     }
   }
 
@@ -81,30 +164,20 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     final mediaQuery = MediaQuery.of(context);
-    final spinKit =
-        SpinKitCubeGrid(color: Theme.of(context).primaryColor, size: 50);
+
     final appBar = AppBar(
+      centerTitle: true,
       title: Text(
         _title[currentIndex],
         style: TextStyle(color: Colors.white),
       ),
-      elevation: currentIndex == 3 ? 0.0 : 10.0,
+      elevation: currentIndex == 3 || currentIndex == 1 ? 0.0 : 10.0,
       leading: IconButton(
           icon: Icon(Icons.menu, color: Colors.white),
           onPressed: () {
             _scaffoldKey.currentState.openDrawer();
           }),
-      shape: currentIndex == 3
-          ? RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(0),
-              ),
-            )
-          : RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(
-                bottom: Radius.circular(30),
-              ),
-            ),
+      shape: shape(currentIndex),
       backgroundColor: _colors[currentIndex],
       actions: [
         IconButton(
@@ -112,7 +185,9 @@ class _DashboardState extends State<Dashboard> {
             Icons.shopping_cart,
             color: Colors.white,
           ),
-          onPressed: null,
+          onPressed: () {
+            Navigator.of(context).pushNamed('/cart_screen');
+          },
         ),
         Consumer<Requests>(
           builder: (_, request, ch) => Badge(
@@ -138,7 +213,7 @@ class _DashboardState extends State<Dashboard> {
         height: mediaQuery.size.height -
             appBar.preferredSize.height -
             mediaQuery.padding.top,
-        child: _isLoading ? Center(child: spinKit) : _body[currentIndex],
+        child: body(currentIndex),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {},

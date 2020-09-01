@@ -10,6 +10,8 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="idealobs"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.here.sdk.access_key_id" android:value="wIwjnos9EIGu1bxi8EdgvQ"/>
+        <meta-data android:name="com.here.sdk.access_key_secret" android:value="bZvmoAEOTWOLX3ntcFJkF_u7bi7oOrFKmdjZJIOMmv-lWK7Kd0ISfENYtF0rmq5SpHAiGhQiOzSfyNf0MbDNCw"/>
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop"

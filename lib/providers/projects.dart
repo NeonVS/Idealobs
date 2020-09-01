@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 import './project.dart';
 
-const serverBaseUrl = 'https://6f8e78027884.ngrok.io';
+const serverBaseUrl = 'https://064031598b44.ngrok.io';
 
 class Projects with ChangeNotifier {
   List<Project> _items = [];
@@ -63,6 +63,7 @@ class Projects with ChangeNotifier {
         serverBaseUrl + '/project/add_project',
         data: formData,
       );
+
       return response.data['projectId'];
     } catch (error) {
       if (error.response.statusCode == 422) {

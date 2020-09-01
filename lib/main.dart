@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:here_sdk/core.dart';
 
 import './providers/auth.dart';
 import './providers/projects.dart';
 import './providers/requests.dart';
 import './providers/messages.dart';
+import './providers/products.dart';
+import './providers/cart.dart';
 import './screens/auth_screen.dart';
 import './screens/login_screen.dart';
 import './screens/signup_screen.dart';
@@ -19,8 +22,11 @@ import './screens/pdf_view_screen.dart';
 import './screens/new_request_screen.dart';
 import './screens/requests_screen.dart';
 import './screens/message_overview_screen.dart';
+import './screens/new_product_screen.dart';
+import './screens/cart_screen.dart';
 
 void main() {
+  SdkContext.init(IsolateOrigin.main);
   runApp(MyApp());
 }
 
@@ -51,6 +57,20 @@ class MyApp extends StatelessWidget {
             auth.token,
             auth.userId,
             previousMessages == null ? [] : previousMessages.messages,
+          ),
+        ),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          update: (ctx, auth, previousProducts) => Products(
+            auth.token,
+            auth.userId,
+            previousProducts == null ? [] : previousProducts.items,
+          ),
+        ),
+        ChangeNotifierProxyProvider<Auth, Cart>(
+          update: (ctx, auth, previousCart) => Cart(
+            auth.token,
+            auth.userId,
+            previousCart == null ? [] : previousCart.items,
           ),
         ),
       ],
@@ -93,6 +113,8 @@ class MyApp extends StatelessWidget {
             AddNewRequest.routeName: (ctx) => AddNewRequest(),
             RequestsScreen.routeName: (ctx) => RequestsScreen(),
             MessageOverviewScreen.routeName: (ctx) => MessageOverviewScreen(),
+            NewProductScreen.routeName: (ctx) => NewProductScreen(),
+            CartScreen.routeName: (ctx) => CartScreen(),
           },
         ),
       ),
