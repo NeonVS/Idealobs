@@ -13,6 +13,7 @@ import '../screens/category_screen.dart';
 import '../screens/requests_screen.dart';
 import '../screens/message_overview_screen.dart';
 import '../screens/shop_screen.dart';
+import '../screens/main_screen.dart';
 
 class Dashboard extends StatefulWidget {
   static const routeName = '/dashboard';
@@ -34,7 +35,7 @@ class _DashboardState extends State<Dashboard> {
     'Messages'
   ];
   List<Color> _colors = [
-    Colors.red,
+    Color.fromRGBO(241, 243, 247, 1),
     Colors.deepPurple,
     Colors.orange.withOpacity(0.8),
     Colors.indigo
@@ -51,7 +52,7 @@ class _DashboardState extends State<Dashboard> {
       if (_areProductsLoading) {
         return spinkit(Colors.deepPurple);
       }
-      return ShopScreen();
+      return MainScreen();
     }
     if (currentIndex == 1) {
       if (_areProductsLoading) {
@@ -127,7 +128,7 @@ class _DashboardState extends State<Dashboard> {
     if (index == 0) {
       return RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
-          bottom: Radius.circular(30),
+          bottom: Radius.circular(0),
         ),
       );
     }
@@ -169,11 +170,20 @@ class _DashboardState extends State<Dashboard> {
       centerTitle: true,
       title: Text(
         _title[currentIndex],
-        style: TextStyle(color: Colors.white),
+        style: TextStyle(
+          color: currentIndex == 0 || currentIndex == 2
+              ? Colors.black
+              : Colors.white,
+        ),
       ),
-      elevation: currentIndex == 3 || currentIndex == 1 ? 0.0 : 10.0,
+      elevation: currentIndex == 2 ? 10.0 : 0.0,
       leading: IconButton(
-          icon: Icon(Icons.menu, color: Colors.white),
+          icon: Icon(
+            Icons.menu,
+            color: currentIndex == 0 || currentIndex == 2
+                ? Colors.black
+                : Colors.white,
+          ),
           onPressed: () {
             _scaffoldKey.currentState.openDrawer();
           }),
@@ -183,7 +193,9 @@ class _DashboardState extends State<Dashboard> {
         IconButton(
           icon: Icon(
             Icons.shopping_cart,
-            color: Colors.white,
+            color: currentIndex == 0 || currentIndex == 2
+                ? Colors.black
+                : Colors.white,
           ),
           onPressed: () {
             Navigator.of(context).pushNamed('/cart_screen');
@@ -193,7 +205,9 @@ class _DashboardState extends State<Dashboard> {
           IconButton(
             icon: Icon(
               Icons.playlist_add_check,
-              color: Colors.white,
+              color: currentIndex == 0 || currentIndex == 2
+                  ? Colors.black
+                  : Colors.white,
             ),
             onPressed: () {
               Navigator.of(context).pushNamed('/order_screen');
@@ -207,7 +221,9 @@ class _DashboardState extends State<Dashboard> {
             ),
             child: IconButton(
               icon: Icon(Icons.person),
-              color: Colors.white,
+              color: currentIndex == 0 || currentIndex == 2
+                  ? Colors.black
+                  : Colors.white,
               onPressed: () {
                 Navigator.of(context).pushNamed(RequestsScreen.routeName);
               },
@@ -230,7 +246,10 @@ class _DashboardState extends State<Dashboard> {
         onPressed: () {},
         child: PopupMenuButton(
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(30))),
+            borderRadius: BorderRadius.all(
+              Radius.circular(30),
+            ),
+          ),
           onSelected: (value) {
             if (value == 0) {
               Navigator.of(context).pushNamed('/new_project');
@@ -242,7 +261,9 @@ class _DashboardState extends State<Dashboard> {
           itemBuilder: (_) => [
             PopupMenuItem(
               child: ListTile(
-                  leading: Icon(Icons.filter_none), title: Text('New Project')),
+                leading: Icon(Icons.filter_none),
+                title: Text('New Project'),
+              ),
               value: 0,
             ),
             PopupMenuItem(
@@ -254,6 +275,9 @@ class _DashboardState extends State<Dashboard> {
           ],
           icon: Icon(
             Icons.add,
+            color: currentIndex == 0 || currentIndex == 2
+                ? Colors.black
+                : Colors.white,
           ),
         ),
         backgroundColor: _colors[currentIndex],

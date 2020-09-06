@@ -26,6 +26,7 @@ import './screens/message_overview_screen.dart';
 import './screens/new_product_screen.dart';
 import './screens/cart_screen.dart';
 import './screens/order_screen.dart';
+import './screens/main_screen.dart';
 
 void main() {
   SdkContext.init(IsolateOrigin.main);
@@ -125,6 +126,7 @@ class MyApp extends StatelessWidget {
             NewProductScreen.routeName: (ctx) => NewProductScreen(),
             CartScreen.routeName: (ctx) => CartScreen(),
             OrderScreen.routeName: (ctx) => OrderScreen(),
+            MainScreen.routeName: (ctx) => MainScreen(),
           },
         ),
       ),

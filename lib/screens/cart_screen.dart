@@ -39,9 +39,7 @@ class _CartScreenState extends State<CartScreen> {
           price: element.price));
     });
     await order.addItem(_items);
-    for (CartItem item in _orderItems) {
-      await deleteCartItem(item);
-    }
+    Provider.of<Cart>(context, listen: false).deleteItems(_orderItems);
   }
 
   void handlerErrorFailure(_) {

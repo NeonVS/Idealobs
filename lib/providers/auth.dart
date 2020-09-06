@@ -10,7 +10,7 @@ import 'package:dio/dio.dart';
 import '../models/http_exception.dart';
 
 //const serverBaseUrl = 'http://localhost:3000';
-const serverBaseUrl = 'https://0a7ef1bd2657.ngrok.io';
+const serverBaseUrl = 'https://5b0e91c28cae.ngrok.io';
 
 class Auth with ChangeNotifier {
   String _token;
@@ -122,6 +122,7 @@ class Auth with ChangeNotifier {
       if (responseData.statusCode >= 400) {
         throw HttpException(response['message']);
       }
+      _enrolledProjects = [];
       response['enrolledProjects'].forEach((projectId) {
         _enrolledProjects.add(projectId.toString());
       });
@@ -140,6 +141,7 @@ class Auth with ChangeNotifier {
           'username': _username,
         },
       );
+      await prefs.clear();
       prefs.setString('userData', userData);
       prefs.setStringList("enrolledProjects", _enrolledProjects);
       print(_username);

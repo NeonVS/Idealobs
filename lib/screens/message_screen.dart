@@ -9,7 +9,7 @@ import '../providers/project.dart';
 import '../providers/message.dart';
 import '../providers/messages.dart';
 
-const serverBaseUrl = 'https://0a7ef1bd2657.ngrok.io';
+const serverBaseUrl = 'https://5b0e91c28cae.ngrok.io';
 
 class MessageScreen extends StatefulWidget {
   Project _project;

@@ -133,7 +133,7 @@ class _RequestsScreenState extends State<RequestsScreen> {
                                     shape: BoxShape.circle,
                                     image: new DecorationImage(
                                       image: new NetworkImage(
-                                          'https://0a7ef1bd2657.ngrok.io/auth/profile_pic?userId=${requests[index].userId}'),
+                                          'https://5b0e91c28cae.ngrok.io/auth/profile_pic?userId=${requests[index].userId}'),
                                       fit: BoxFit.cover,
                                     ),
                                     border: Border.all(

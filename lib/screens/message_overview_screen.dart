@@ -13,7 +13,7 @@ import '../providers/auth.dart';
 
 import './message_screen.dart';
 
-const serverBaseUrl = 'https://0a7ef1bd2657.ngrok.io';
+const serverBaseUrl = 'https://5b0e91c28cae.ngrok.io';
 
 class MessageOverviewScreen extends StatefulWidget {
   static const routeName = '/message_overview_screen';
@@ -46,7 +46,7 @@ class _MessageOverviewScreenState extends State<MessageOverviewScreen> {
         (project) {
           SocketIO socketIO;
           socketIO = SocketIOManager().createSocketIO(
-              'https://0a7ef1bd2657.ngrok.io', '/dynamic-${project.projectId}',
+              'https://5b0e91c28cae.ngrok.io', '/dynamic-${project.projectId}',
               query: 'chatID=${project.projectId}');
           socketIO.init();
           socketIO.subscribe(

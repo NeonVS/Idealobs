@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 import './project.dart';
 
-const serverBaseUrl = 'https://0a7ef1bd2657.ngrok.io';
+const serverBaseUrl = 'https://5b0e91c28cae.ngrok.io';
 
 class Projects with ChangeNotifier {
   List<Project> _items = [];
@@ -17,6 +17,14 @@ class Projects with ChangeNotifier {
 
   List<Project> get items {
     return [..._items];
+  }
+
+  List<Project> get yourItems {
+    return [
+      ..._items.where((project) {
+        return project.creator == userId;
+      }).toList()
+    ];
   }
 
   Future<String> addProject(

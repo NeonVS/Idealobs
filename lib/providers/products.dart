@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import '../models/place.dart';
 import './product.dart';
 
-const serverBaseUrl = 'https://0a7ef1bd2657.ngrok.io';
+const serverBaseUrl = 'https://5b0e91c28cae.ngrok.io';
 
 class Products with ChangeNotifier {
   List<Product> _items = [];
@@ -18,6 +18,10 @@ class Products with ChangeNotifier {
 
   List<Product> get items {
     return [..._items];
+  }
+
+  List<Product> get yourItems {
+    return [..._items.where((product) => product.creatorId == userId).toList()];
   }
 
   Future<void> addProduct(Product product, File image) async {

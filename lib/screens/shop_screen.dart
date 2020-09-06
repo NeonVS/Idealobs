@@ -6,7 +6,7 @@ import './product_detail_screen.dart';
 import '../providers/products.dart';
 import '../widget/carousel.dart';
 
-const serverBaseUrl = 'https://0a7ef1bd2657.ngrok.io';
+const serverBaseUrl = 'https://5b0e91c28cae.ngrok.io';
 
 class ShopScreen extends StatefulWidget {
   @override
@@ -34,8 +34,9 @@ class _ShopScreenState extends State<ShopScreen> {
                 decoration: BoxDecoration(
                   color: Colors.deepPurple,
                   borderRadius: BorderRadius.only(
-                      bottomLeft: Radius.elliptical(90, 60),
-                      bottomRight: Radius.elliptical(90, 60)),
+                    bottomLeft: Radius.elliptical(90, 60),
+                    bottomRight: Radius.elliptical(90, 60),
+                  ),
                 ),
                 child: Column(
                   children: [
@@ -78,14 +79,18 @@ class _ShopScreenState extends State<ShopScreen> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.all(Radius.circular(20)),
                         ),
-                        elevation: 3,
+                        elevation: 2,
                         child: GestureDetector(
                           onTap: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (BuildContext context) =>
-                                        ProductDetailScreen(products[i])));
+                              context,
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    ProductDetailScreen(
+                                  products[i],
+                                ),
+                              ),
+                            );
                           },
                           child: SingleChildScrollView(
                             child: Column(
@@ -98,9 +103,10 @@ class _ShopScreenState extends State<ShopScreen> {
                                     child: Hero(
                                       tag: products[i].productId,
                                       child: Image.network(
-                                          serverBaseUrl +
-                                              '/product/product_image?creator=${products[i].creatorId}&productName=${products[i].productName}',
-                                          fit: BoxFit.cover),
+                                        serverBaseUrl +
+                                            '/product/product_image?creator=${products[i].creatorId}&productName=${products[i].productName}',
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -113,7 +119,8 @@ class _ShopScreenState extends State<ShopScreen> {
                                       decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(20),
                                         border: Border.all(
-                                            color: Colors.deepPurple[400]),
+                                          color: Colors.deepPurple[400],
+                                        ),
                                       ),
                                       child: Row(
                                         children: [
@@ -143,7 +150,7 @@ class _ShopScreenState extends State<ShopScreen> {
                                 ),
                                 FlatButton(
                                   onPressed: () {},
-                                  child: Text('Add to Cart !',
+                                  child: Text('\$ ${products[i].price}',
                                       style: TextStyle(color: Colors.white)),
                                   color: Colors.deepPurple,
                                   shape: RoundedRectangleBorder(

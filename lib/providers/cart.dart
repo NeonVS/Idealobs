@@ -7,7 +7,7 @@ import '../models/http_exception.dart';
 import '../models/place.dart';
 import './product.dart';
 
-const serverBaseUrl = 'https://0a7ef1bd2657.ngrok.io';
+const serverBaseUrl = 'https://5b0e91c28cae.ngrok.io';
 
 class CartItem {
   final Product product;
@@ -170,5 +170,17 @@ class Cart with ChangeNotifier {
       print(error);
       throw HttpException('Server Error, Please try after some time!');
     }
+  }
+
+  void deleteItems(List<CartItem> items) {
+    final _loadedItems = _items;
+    _loadedItems.removeWhere((element) {
+      return items.fold(false, (previousValue, item) {
+        return element.product.productId == item.product.productId ||
+            previousValue;
+      });
+    });
+    _items = _loadedItems;
+    notifyListeners();
   }
 }

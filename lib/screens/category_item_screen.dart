@@ -6,7 +6,7 @@ import '../providers/projects.dart';
 
 import './project_detail_screen.dart';
 
-const serverBaseUrl = 'https://0a7ef1bd2657.ngrok.io';
+const serverBaseUrl = 'https://5b0e91c28cae.ngrok.io';
 
 class CategoryItems extends StatelessWidget {
   static String routeName = '/category_items';
